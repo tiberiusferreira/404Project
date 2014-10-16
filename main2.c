@@ -2,33 +2,33 @@
 #include <stdlib.h>
 #include<string.h>
 
-FILE* retiraComentario(FILE *arq){
+void retiraComentario(FILE *arq, FILE *out){
     char c;
     int flag=0;
     int comentario=0;
-    FILE *temp=fopen("temp.txt","w+");
     while(!feof(arq)){
         fscanf(arq, "%c", &c );
         if(c=='#'){
            comentario=1;
         }
-        if(c==' '||c==':'||c=='\t'||c==','||c=='.'||c==';'||c=='('||c==')'||c=='['||c==']'||c=='*'||c=='?'||c=='!'||c=='-'||c==34/* caracter " */||c=='/'||c=='"'){
-          //  printf("(%c)\n",c);
-            if(flag==0)
-                fprintf(temp,"%c",'\n');
-            flag=1;
-        }
+        //if(c==' '||c==':'||c=='\t'||c==','||c=='.'||c==';'||c=='('||c==')'||c=='['||c==']'||c=='*'||c=='?'||c=='!'||c=='-'||c==34/* caracter " */||c=='/'||c=='"'){
+          //  if(flag==0)
+            //    fprintf(out,"%c",'\n');
+          //  flag=1;
+        //}
         else{
             if(comentario==0){
-                fprintf(temp,"%c",c);
+                fprintf(out,"%c",c);
                 flag=0;
             }
             if(c=='\n'){
                 comentario=0;
+                fprintf(out,"%c",'\n');
+
             }
         }
     }
-    return temp;
+    return;
 }
 
 int main(int argc, char* argv[]){
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
         return 1;
     }
     FILE *out=fopen(argv[2],"w+");
-    out=retiraComentario(in);
+    retiraComentario(in,out);
     fclose(in);
     fclose(out);
     return 0;
