@@ -1,10 +1,28 @@
-vetor:
-vetor: .word 10
-vetor: .word 10 
-.word 10
-.word 10 
 
-vetor: ADD M(0x100)
-vetor: ADD M(0x100) 
-ADD M(0x100)
+000 LOAD M(0F2); STOR M(002,28:39)
+001 ADD M(0F1); STOR M(0F2)
+
+002 LOAD M(0F3); ADD M(000)
+
+STOR M(X,28:39)
+Mem[X](28:39) := AC(28:39)
+Move os 12 bits `a direita do registrador AC para o campo endere ̧co da instru ̧c ̃ao `a direita da palavra de mem ́oria no endere ̧co X.
+000100112 | 1316
+X
+003 STOR M(0F3); LOAD M(0F0)
+
+004 SUB M(0F1); STOR M(0F0)
+005 JUMP+ M(000,0:19); ...
+
+0F0 0000000013
+0F1 0000000001
+0F2 0000000100
+0F3 0000000000
+
+100 0000000000
+... ...
+
+
+
+
 
