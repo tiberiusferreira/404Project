@@ -6,4 +6,5 @@ vetor: .word 10
 
 vetor: ADD M(0x100)
 vetor: ADD M(0x100) 
-ADD M(0x100))
+ADD M(0x100)
+

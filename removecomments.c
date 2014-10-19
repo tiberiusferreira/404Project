@@ -2,9 +2,9 @@
 void retiraComentario(FILE *arq, FILE *out){
     char c;
     while(!feof(arq)){
-        fscanf(arq, "%c", &c );
+        fscanf(arq, "%c", &c);
         if(c=='#'){
-            while(c!='\n'){
+            while(c!='\n' && !feof(arq)){
                 fscanf(arq, "%c", &c );
             }
             //is out of if, it means it found a \n put it in the file
