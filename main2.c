@@ -23,8 +23,10 @@ void retiraComentario(FILE *arq, FILE *out){
             }
             if(c=='\n'){
                 comentario=0;
+                if(flag==1) {
                 fprintf(out,"%c",'\n');
-
+                flag=0;
+                }
             }
         }
     }
