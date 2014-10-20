@@ -1,19 +1,5 @@
 #include "linkedlist.h"
 
-typedef struct rotulo//Estrutura que armazena informações relevantes do rotulo = ITEM
-{
-    char *nome;
-    int comentario;
-    int endereco;
-} Rotulo;
-
-typedef struct lista//Nó da lista
-{
-    Rotulo info;
-    struct lista *prox;
-
-} node;
-
 node *cria()//cria a lista
 {
     node *novo= (node *) malloc(sizeof(node));
@@ -100,8 +86,3 @@ void insere_final(node *LISTA, Rotulo e)// Insere novo nó no final da lista
         novo->prox=NULL;
     }
 }
-/*NÃO SEI O QUE FAZER COM ISSO...
-linkedlist::linkedlist()
-{
-}
-*/

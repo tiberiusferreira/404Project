@@ -46,9 +46,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.c \
-		main_old.c 
+		main_old.c \
+		linkedlist.c 
 OBJECTS       = main.o \
-		main_old.o
+		main_old.o \
+		linkedlist.o
 DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/qdevice.pri \
 		/Applications/QT/5.3/clang_64/mkspecs/features/device_config.prf \
@@ -161,7 +163,8 @@ DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/yacc.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/lex.prf \
 		404Project.pro main.c \
-		main_old.c
+		main_old.c \
+		linkedlist.c
 QMAKE_TARGET  = 404Project
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = 404Project
@@ -468,11 +471,15 @@ compiler_clean:
 ####### Compile
 
 main.o: main.c removecomments.h \
-		removecomments.c
+		removecomments.c \
+		linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main.o main.c
 
 main_old.o: main_old.c 
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main_old.o main_old.c
+
+linkedlist.o: linkedlist.c linkedlist.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o linkedlist.o linkedlist.c
 
 ####### Install
 
