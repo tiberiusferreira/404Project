@@ -20,27 +20,16 @@ node *cria()//cria a lista
     novo->prox=NULL;
     return novo;
 }
-void retira(node *LISTA, int posicao)//remove nó da lista na posição desejada, começando da posição 1
-{
-    node *atual = LISTA->prox,
-          *anterior=LISTA;
 
-    while(atual->info.prioridade < posicao && atual->info.concluido==0)
-    {
-        anterior=atual;
-        atual=atual->prox;
-    }
-
-    anterior->prox=atual->prox;
-}
 void visualiza(node *LISTA)//imprime a lista para visualização
 {
     node *aux;
     for(aux=LISTA->prox; aux->prox!=NULL; aux=aux->prox)
     {
-        printf("%s, ",aux->info.id);
+        printf("%s, ",aux->info.nome);
     }
-     printf("%s.\n",aux->info.id);
+     printf("%s.\n",aux->info.nome);
+
 }
 void inicia(node *LISTA)//inicializa a lista
 {
@@ -72,6 +61,7 @@ int vazia(node *LISTA)//verifica se a lista está vazia
 
 void insere(node *LISTA, Rotulo e, int pos)//insere novo nó na lista na posicao desejada
 {
+    int count;
     node *novo=(node *) malloc(sizeof(node));
     novo->info=e;
     if(pos==1)
@@ -98,7 +88,7 @@ void insere_final(node *LISTA, Rotulo e)// Insere novo nó no final da lista
 {
     node *novo=(node *) malloc(sizeof(node));
     novo->info=e;
-    if(LISTA->prox==NULL||LISTA->prox->info.prioridade < novo->info.prioridade)
+    if(LISTA->prox==NULL)
     {
         node *oldHead = LISTA->prox;
         LISTA->prox = novo;
@@ -108,27 +98,6 @@ void insere_final(node *LISTA, Rotulo e)// Insere novo nó no final da lista
     {
         LISTA->prox->prox=novo;
         novo->prox=NULL;
-    }
-    else
-    {
-        node *atual = LISTA->prox,
-              *anterior=LISTA;
-        while(atual->info.prioridade >= novo->info.prioridade&&atual!=NULL)
-        {
-            anterior=atual;
-            if(atual->prox!=NULL) atual=atual->prox;
-            else break;
-        }
-        if(atual->prox==NULL&&atual->info.prioridade >= novo->info.prioridade)
-        {
-            atual->prox=novo;
-            novo->prox=NULL;
-        }
-        else
-        {
-            anterior->prox=novo;
-            novo->prox = atual;
-        }
     }
 }
 /*NÃO SEI O QUE FAZER COM ISSO...
