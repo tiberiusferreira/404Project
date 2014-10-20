@@ -72,17 +72,18 @@ void insere(node *LISTA, Rotulo e, int pos)//insere novo nó na lista na posicao 
 }
 void insere_final(node *LISTA, Rotulo e)// Insere novo nó no final da lista
 {
+    node *my_lista=LISTA;
     node *novo=(node *) malloc(sizeof(node));
     novo->info=e;
-    if(LISTA->prox==NULL)
-    {
-        node *oldHead = LISTA->prox;
-        LISTA->prox = novo;
-        novo->prox = oldHead;
+    for(;LISTA!=NULL;LISTA=LISTA->prox){
+        if(LISTA->prox==NULL)
+        {
+            node *oldHead = LISTA->prox;
+            LISTA->prox = novo;
+            novo->prox = oldHead;
+            return;
+        }
     }
-    else if(LISTA->prox->prox==NULL)
-    {
-        LISTA->prox->prox=novo;
-        novo->prox=NULL;
-    }
+    visualiza(my_lista);
+
 }

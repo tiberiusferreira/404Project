@@ -21,16 +21,16 @@ int main(int argc, char* argv[]){
     my_rot.endereco=3;
     my_rot.nome="My_name";
 
-    my_rot.comentario=1;
-    my_rot.endereco=4;
-    my_rot.nome="My_name2";
+    my_rot2.comentario=1;
+    my_rot2.endereco=4;
+    my_rot2.nome="My_name2";
 
-    my_rot.comentario=1;
-    my_rot.endereco=5;
-    my_rot.nome="My_name3";
+    my_rot3.comentario=1;
+    my_rot3.endereco=5;
+    my_rot3.nome="My_name3";
     insere_final(my_node,my_rot);
     insere_final(my_node,my_rot2);
     insere_final(my_node,my_rot3);
-    visualiza(my_node);
+    visualiza(my_node); //not working!!
     return 0;
 }
