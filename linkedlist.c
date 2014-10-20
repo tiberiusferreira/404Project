@@ -7,7 +7,7 @@ node *cria()//cria a lista
     return novo;
 }
 
-void visualiza(node *LISTA)//imprime a lista para visualização
+void visualiza(node *LISTA) //imprime a lista para visualização
 {
     node *aux;
     for(aux=LISTA->prox; aux->prox!=NULL; aux=aux->prox)
@@ -16,10 +16,6 @@ void visualiza(node *LISTA)//imprime a lista para visualização
     }
      printf("%s.\n",aux->info.nome);
 
-}
-void inicia(node *LISTA)//inicializa a lista
-{
-    LISTA->prox = NULL;
 }
 void libera(node *LISTA)//libera a lista e todos nos associados a ela
 {
@@ -45,7 +41,7 @@ int vazia(node *LISTA)//verifica se a lista está vazia
         return 0;
 }
 
-void insere(node *LISTA, Rotulo e, int pos)//insere novo nó na lista na posicao desejada
+void insere(node *LISTA, rotulo e, int pos)//insere novo nó na lista na posicao desejada
 {
     int count;
     node *novo=(node *) malloc(sizeof(node));
@@ -70,20 +66,15 @@ void insere(node *LISTA, Rotulo e, int pos)//insere novo nó na lista na posicao 
         novo->prox = atual;
     }
 }
-void insere_final(node *LISTA, Rotulo e)// Insere novo nó no final da lista
+void insere_final(node *LISTA, rotulo e)// Insere novo nó no final da lista
 {
-    node *my_lista=LISTA;
-    node *novo=(node *) malloc(sizeof(node));
+    node *novo=cria();
     novo->info=e;
     for(;LISTA!=NULL;LISTA=LISTA->prox){
         if(LISTA->prox==NULL)
         {
-            node *oldHead = LISTA->prox;
             LISTA->prox = novo;
-            novo->prox = oldHead;
             return;
         }
     }
-    visualiza(my_lista);
-
 }

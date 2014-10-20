@@ -15,8 +15,7 @@ int main(int argc, char* argv[]){
     fclose(out);
     node *my_node;
     my_node=cria();
-    inicia(my_node);
-    Rotulo my_rot,my_rot2,my_rot3;
+    rotulo my_rot,my_rot2,my_rot3;
     my_rot.comentario=1;
     my_rot.endereco=3;
     my_rot.nome="My_name";
