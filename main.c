@@ -3,6 +3,20 @@
 #include <string.h>
 #include "removecomments.h"
 #include "linkedlist.h"
+
+
+/*-------------------
+FUNÇÃO AUXILIAR ÚTIL
+----------------------*/
+
+rotulo newItem(char *name, int adress, int comment){
+    rotulo novo;
+    novo.nome=name;
+    novo.endereco=adress;
+    novo.comentario=comment;
+    return novo;
+}
+/*---------------------*/
 int main(int argc, char* argv[]){
     FILE *in=fopen(argv[1],"r");
     if(in==NULL) {
@@ -16,20 +30,15 @@ int main(int argc, char* argv[]){
     node *my_node;
     my_node=cria();
     rotulo my_rot,my_rot2,my_rot3;
-    my_rot.comentario=1;
-    my_rot.endereco=3;
-    my_rot.nome="My_name";
-
-    my_rot2.comentario=1;
-    my_rot2.endereco=4;
-    my_rot2.nome="My_name2";
-
-    my_rot3.comentario=1;
-    my_rot3.endereco=5;
-    my_rot3.nome="My_name3";
+    my_rot=newItem("My_name",1,3);
+    my_rot=newItem("My_name2",1,4);
+    my_rot=newItem("My_name3",1,5);
     insere_final(my_node,my_rot);
     insere_final(my_node,my_rot2);
     insere_final(my_node,my_rot3);
+    retira(my_node,"cC");
+
+
     visualiza(my_node); //not working!!
     return 0;
 }

@@ -91,3 +91,17 @@ void insere_final(node *LISTA, rotulo e)// Insere novo nó no final da lista
         }
     }
 }
+void retira(node *LISTA, char *wanted)
+{
+    node *atual = LISTA->prox,
+          *anterior=LISTA;
+    if(atual==NULL) return;
+    while(atual->info.nome!=wanted)
+    {
+        anterior=atual;
+        atual=atual->prox;
+        if(atual->prox==NULL) return;
+    }
+
+    anterior->prox=atual->prox;
+}
