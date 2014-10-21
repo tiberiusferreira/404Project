@@ -22,7 +22,8 @@ int vazia(node *LISTA);
 void insere(node *LISTA, rotulo e, int pos);
 void insere_final(node *LISTA, rotulo e);
 void retira(node *LISTA, char *wanted);
-
+rotulo newItem(char *name, int adress, int comment);
+rotulo busca(node *LISTA, char *wanted);
 
 
 #endif // LINKEDLIST_H

@@ -100,8 +100,30 @@ void retira(node *LISTA, char *wanted)
     {
         anterior=atual;
         atual=atual->prox;
-        if(atual->prox==NULL) return;
+        if(atual==NULL) return;
     }
 
     anterior->prox=atual->prox;
+}
+rotulo busca(node *LISTA, char *wanted)
+{
+    rotulo vazio=newItem("vazio",-1,-1);
+    node *atual = LISTA->prox,
+          *anterior=LISTA;
+    if(atual==NULL) return vazio;
+    while(atual->info.nome!=wanted)
+    {
+        anterior=atual;
+        atual=atual->prox;
+        if(atual==NULL) return vazio;
+    }
+
+    return atual->info;
+}
+rotulo newItem(char *name, int adress, int comment){
+    rotulo novo;
+    novo.nome=name;
+    novo.endereco=adress;
+    novo.comentario=comment;
+    return novo;
 }

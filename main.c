@@ -5,18 +5,7 @@
 #include "linkedlist.h"
 
 
-/*-------------------
-FUNÇÃO AUXILIAR ÚTIL
-----------------------*/
 
-rotulo newItem(char *name, int adress, int comment){
-    rotulo novo;
-    novo.nome=name;
-    novo.endereco=adress;
-    novo.comentario=comment;
-    return novo;
-}
-/*---------------------*/
 int main(int argc, char* argv[]){
     FILE *in=fopen(argv[1],"r");
     if(in==NULL) {
@@ -30,14 +19,20 @@ int main(int argc, char* argv[]){
     node *my_node;
     my_node=cria();
     rotulo my_rot,my_rot2,my_rot3;
-    my_rot=newItem("My_name",1,3);
-    my_rot=newItem("My_name2",1,4);
-    my_rot=newItem("My_name3",1,5);
+    my_rot=newItem("My_name",3,1);
+    my_rot2=newItem("My_name2",4,1);
+    my_rot3=newItem("My_name3",5,1);
+
     insere_final(my_node,my_rot);
     insere_final(my_node,my_rot2);
     insere_final(my_node,my_rot3);
     retira(my_node,"cC");
 
+    printf(">>%d\n",busca(my_node,"My_name2").endereco);
+    printf(">>%d\n",busca(my_node,"My_name").endereco);
+
+    printf(">>%d\n",busca(my_node,"My_name3").endereco);
+        printf(">>%d\n",busca(my_node,"My_nad").endereco);
 
     visualiza(my_node); //not working!!
     return 0;
