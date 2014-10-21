@@ -16,6 +16,19 @@ void visualiza(node *LISTA) //imprime a lista para visualização
     }
      printf("%s.\n",aux->info.nome);
 
+void retira(node *LISTA, char *wanted)
+{
+    node *atual = LISTA->prox,
+          *anterior=LISTA;
+
+    while(atual->info.nome!=wanted&&atual!=NULL)
+    {
+        anterior=atual;
+        atual=atual->prox;
+    }
+
+    if(atual!=NULL)anterior->prox=atual->prox;
+}
 }
 void libera(node *LISTA)//libera a lista e todos nos associados a ela
 {

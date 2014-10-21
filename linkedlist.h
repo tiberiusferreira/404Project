@@ -21,6 +21,8 @@ void libera(node *LISTA);
 int vazia(node *LISTA);
 void insere(node *LISTA, rotulo e, int pos);
 void insere_final(node *LISTA, rotulo e);
+void retira(node *LISTA, char *wanted);
+
 
 
 #endif // LINKEDLIST_H
