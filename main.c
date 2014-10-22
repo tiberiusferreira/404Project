@@ -1,39 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "removecomments.h"
+#include "dealwithfile.h"
 #include "linkedlist.h"
 
 
 
 int main(int argc, char* argv[]){
-    FILE *in=fopen(argv[1],"r");
-    if(in==NULL) {
+    FILE *in=fopen(argv[1],"r"); //abre o arquivo de entrada passado pela como arg
+    FILE *out=fopen(argv[2],"w+"); //abre o arquivo de saida passado como segundo arg
+    char **file_matriz=NULL, *file_contents;
+    int *num_lines=NULL,*num_chars=NULL, *size_contents=NULL,i; //num_lines stores the number of lines, num_chars is a vector and stores the number
+    if(in==NULL) { //of chars in the line which is the index of the vector
         printf("Entrada nao encontrada\n");
         return 1;
     }
-    FILE *out=fopen(argv[2],"w+");
-    retiraComentario(in,out);
+    if(out==NULL) {
+        printf("Arquivo para saida nao encontrado");
+        return 1;
+    }
+    //retiraComentario(in,out);
+    //file_matriz=fileToMatriz(in,&num_lines,&num_chars);
+    file_contents=fileToVector(in,&size_contents);
     fclose(in);
     fclose(out);
-    node *my_node;
-    my_node=cria();
-    rotulo my_rot,my_rot2,my_rot3;
-    my_rot=newItem("My_name",3,1);
-    my_rot2=newItem("My_name2",4,1);
-    my_rot3=newItem("My_name3",5,1);
+    removeComents(file_contents,size_contents);
+    compileProgram(file_contents,size_contents);
 
-    insere_final(my_node,my_rot);
-    insere_final(my_node,my_rot2);
-    insere_final(my_node,my_rot3);
-    retira(my_node,"cC");
 
-    printf(">>%d\n",busca(my_node,"My_name2").endereco);
-    printf(">>%d\n",busca(my_node,"My_name").endereco);
 
-    printf(">>%d\n",busca(my_node,"My_name3").endereco);
-        printf(">>%d\n",busca(my_node,"My_nad").endereco);
-
-    visualiza(my_node); //not working!!
     return 0;
 }

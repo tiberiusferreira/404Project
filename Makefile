@@ -46,11 +46,13 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.c \
-		main_old.c \
-		linkedlist.c 
+		linkedlist.c \
+		getlabels.c \
+		dealwithfile.c 
 OBJECTS       = main.o \
-		main_old.o \
-		linkedlist.o
+		linkedlist.o \
+		getlabels.o \
+		dealwithfile.o
 DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/qdevice.pri \
 		/Applications/QT/5.3/clang_64/mkspecs/features/device_config.prf \
@@ -163,8 +165,9 @@ DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/yacc.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/lex.prf \
 		404Project.pro main.c \
-		main_old.c \
-		linkedlist.c
+		linkedlist.c \
+		getlabels.c \
+		dealwithfile.c
 QMAKE_TARGET  = 404Project
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = 404Project
@@ -470,16 +473,20 @@ compiler_clean:
 
 ####### Compile
 
-main.o: main.c removecomments.h \
-		removecomments.c \
+main.o: main.c dealwithfile.h \
 		linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main.o main.c
 
-main_old.o: main_old.c 
-	$(CC) -c $(CFLAGS) $(INCPATH) -o main_old.o main_old.c
-
 linkedlist.o: linkedlist.c linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o linkedlist.o linkedlist.c
+
+getlabels.o: getlabels.c getlabels.h \
+		linkedlist.h \
+		dealwithfile.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o getlabels.o getlabels.c
+
+dealwithfile.o: dealwithfile.c dealwithfile.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o dealwithfile.o dealwithfile.c
 
 ####### Install
 

@@ -15,20 +15,6 @@ void visualiza(node *LISTA) //imprime a lista para visualização
         printf("%s, ",aux->info.nome);
     }
      printf("%s.\n",aux->info.nome);
-
-void retira(node *LISTA, char *wanted)
-{
-    node *atual = LISTA->prox,
-          *anterior=LISTA;
-
-    while(atual->info.nome!=wanted&&atual!=NULL)
-    {
-        anterior=atual;
-        atual=atual->prox;
-    }
-
-    if(atual!=NULL)anterior->prox=atual->prox;
-}
 }
 void libera(node *LISTA)//libera a lista e todos nos associados a ela
 {
@@ -79,7 +65,7 @@ void insere(node *LISTA, rotulo e, int pos)//insere novo nó na lista na posicao 
         novo->prox = atual;
     }
 }
-void insere_final(node *LISTA, rotulo e)// Insere novo nó no final da lista
+void insere_final(node *LISTA, rotulo e)// Insere novo no no final da lista
 {
     node *novo=cria();
     novo->info=e;
@@ -120,10 +106,10 @@ rotulo busca(node *LISTA, char *wanted)
 
     return atual->info;
 }
-rotulo newItem(char *name, int adress, int comment){
+rotulo newItem(char *name, int adress, int direction){
     rotulo novo;
     novo.nome=name;
     novo.endereco=adress;
-    novo.comentario=comment;
+    novo.aponta_dir=direction;
     return novo;
 }
