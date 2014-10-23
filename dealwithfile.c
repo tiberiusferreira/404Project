@@ -11,48 +11,39 @@ void removeComents(char *file_contents,int *size){
         }
     }
 }
-void compileProgram(char *file_contents,int *size){ //receives file contents and size of it
+void getNextWord(char *current_word, int *current_source_line,int *current_source_line_word, int *size_current_word, int *i, char *file_contents, int size_file_contents){ //receives file contents and size of it
     char c;
-    char current_word[101], hex_file[100000]; //TODO get right hex file max size
-    int current_source_line=1, current_source_line_word=0;
-    int current_hex_pos=0,size_current_word=0;
-    int local_size = *size,i,i_cur_word;
-    initialize_hex(hex_file);
-    for(i=0;i<local_size;){ //go through all file
-        c=file_contents[i]; //get each char from file
-        for(;(file_contents[i]==' ' || file_contents[i]=='\n' )&& i<local_size;i++){ //jump white spaces and line breaks
-            if(file_contents[i]=='\n'){ //if finds a line break increase source code line counter
-                current_source_line_word=0;
-                current_source_line++;
+    int i_cur_word;
+    //printf("%s",hex_file);
+    for(;*i<size_file_contents;){ //go through all file
+        c=file_contents[*i]; //get each char from file
+        for(;(file_contents[*i]==' ' || file_contents[*i]=='\n' )&& *i<size_file_contents;(*i)++){ //jump white spaces and line breaks
+            if(file_contents[*i]=='\n'){ //if finds a line break increase source code line counter
+                (*current_source_line_word)=0;
+                (*current_source_line)++;
             }
             continue;
         }
         //at this point we expect file_contents[i] to point to the beginning of a word
-        for(i_cur_word=0;;i_cur_word++,i++){
-            c=file_contents[i]; //get each char from file
-            if(file_contents[i]==' ' || file_contents[i]=='\n' || i==local_size){//word ended if found whitespace or line break or end of file
+        for(i_cur_word=0;;i_cur_word++,(*i)++){
+            c=file_contents[*i]; //get each char from file
+            if(file_contents[*i]==' ' || file_contents[*i]=='\n' || *i==size_file_contents){//word ended if found whitespace or line break or end of file
                 current_word[i_cur_word]='\0';
-                current_source_line_word++;
+                (*current_source_line_word)++;
                 break;
             }
-            current_word[i_cur_word]=file_contents[i];
+            current_word[i_cur_word]=file_contents[*i];
         }
-        size_current_word=i_cur_word;
-        //printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
-        //convert_word_to_instruction(current_word,size_current_word,current_source_line_word,hex_file,current_hex_pos);
-//        if(!strcmp(current_word,".word")){
-//            printf("E word!\n");
-//        }
+        *size_current_word=i_cur_word;
+        return;
     }
 }
 
 void initialize_hex(char *hex_file){
-    //17 chars
-    int i,line=0, line_as_hex=0,num_chars=0,i2;
-    //printf("%ld\n",strtol(,NULL,16));
-    //hex_file[i]=strtol(line,NULL,16);
-    char temp[100];
-    for(i=0;i<17407;){
+    //18 chars per line = 17 + \n
+    int i,line=0,num_chars=0,i2;
+    char temp[6];
+    for(i=0;i<18414;){
         num_chars=sprintf(temp,"%x",line);
         for(i2=0;i2<num_chars;i2++){
             hex_file[i+i2]=temp[i2];
@@ -63,14 +54,6 @@ void initialize_hex(char *hex_file){
             i++;
             i2++;
         }
-        hex_file[i]=' ';
-        i++;
-        hex_file[i]='L';
-        i++;
-        hex_file[i]='L';
-        i++;
-        hex_file[i]='L';
-        i++;
         hex_file[i]=' ';
         i++;
         hex_file[i]='L';
@@ -103,11 +86,28 @@ void initialize_hex(char *hex_file){
         line++;
         i++;
     }
-    printf("%s",hex_file);
 }
 
-void convert_word_to_instruction(char *word, int word_size,int word_pos_in_line, char *hex_file, int hex_pos){
-    printf("Received word : %s, size %d, word_pos_in_line %d\n",word,word_size,word_pos_in_line);
+
+void convert_word_to_instruction(char *file_contents, int size_file_contents){
+    char current_word[101], hex_file[18420];
+    int current_source_line, current_source_line_word;
+    current_source_line_word=0;
+    current_source_line=1;
+    int current_hex_pos=0,size_current_word;
+    size_current_word=0;
+    int i,i_cur_word;
+    initialize_hex(hex_file);
+    getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+    printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
+    getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+    printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
+    getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+    printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
+    getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+    printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
+
+
 
 }
 

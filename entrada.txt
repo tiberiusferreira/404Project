@@ -1,9 +1,3 @@
-vetor:
-vetor: .word 10
-vetor: .word 10 # Comentario apos diretiva
-.word 10
-.word 10 # Comentario apos diretiva
-# Comentario sozinho
-vetor: ADD M(0x100)
-vetor: ADD M(0x100) # Comentario apos instrucao
-ADD M(0x100)
+.word asdadw
+asdas
+asas
