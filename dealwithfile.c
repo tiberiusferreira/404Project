@@ -11,32 +11,33 @@ void removeComents(char *file_contents,int *size){
         }
     }
 }
-void compileProgram(char *file_contents,int *size){
+void compileProgram(char *file_contents,int *size){ //receives file contents and size of it
     char c;
     char current_word[101];
     int current_source_line=1, current_source_line_word=0;
     int current_hex_line=0,size_current_word=0;
     int local_size = *size,i,i_cur_word;
-    for(i=0;i<local_size;i++){ //go through all file
-        c=file_contents[i]; //get each char
-        for(;file_contents[i]==' ' && i<local_size;i++){ //jump white spaces
+    for(i=0;i<local_size;){ //go through all file
+        c=file_contents[i]; //get each char from file
+        for(;(file_contents[i]==' ' || file_contents[i]=='\n' )&& i<local_size;i++){ //jump white spaces and line breaks
+            if(file_contents[i]=='\n'){ //if finds a line break increase source code line counter
+                current_source_line_word=0;
+                current_source_line++;
+            }
             continue;
         }
-        if(file_contents[i]=='\n'){
-            current_source_line++;
-            continue;
-        }
-        //at this point we expect to be file_contents[i] to point to the beginning of a word
+        //at this point we expect file_contents[i] to point to the beginning of a word
         for(i_cur_word=0;;i_cur_word++,i++){
-            if(file_contents[i]==' ' || file_contents[i]=='\n' || i==local_size){
+            c=file_contents[i]; //get each char from file
+            if(file_contents[i]==' ' || file_contents[i]=='\n' || i==local_size){//word ended if found whitespace or line break or end of file
                 current_word[i_cur_word]='\0';
+                current_source_line_word++;
                 break;
             }
             current_word[i_cur_word]=file_contents[i];
-            current_source_line_word++;
         }
         size_current_word=i_cur_word;
-        printf("Tratando : %s\n",current_word);
+        printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
         if(!strcmp(current_word,".word")){
             printf("E word!\n");
         }
