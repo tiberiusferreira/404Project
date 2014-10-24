@@ -164,8 +164,8 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     if(!strcasecmp(current_word,".word")){
         printf("Got word!\n");
         getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
-        int_to_hexchar(current_hex_line,temp);
-        write_to_hex(hex_file,temp,current_word,-1);
+        int_to_hexchar(0,temp);
+        write_to_hex(hex_file,"0xAA",current_word,-1);
         printf("%s",hex_file);
     }
 }
