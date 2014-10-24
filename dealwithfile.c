@@ -151,7 +151,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
     }
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
-    char current_word[101], hex_file[18420];
+    char current_word[101], hex_file[18420],temp[10];
     int current_source_line, current_source_line_word;
     current_source_line_word=0;
     current_source_line=1;
@@ -163,7 +163,10 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
     if(!strcasecmp(current_word,".word")){
         printf("Got word!\n");
-        //write_to_hex(hex_file,);
+        getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+        int_to_hexchar(current_hex_line,temp);
+        write_to_hex(hex_file,temp,current_word,-1);
+        printf("%s",hex_file);
     }
 }
 
