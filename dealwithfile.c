@@ -98,6 +98,13 @@ int hexchar_to_int(char *hex){
     return number;
 }
 
+char *int_to_hexchar(int number, char *destiny){
+    destiny[0]='0';
+    destiny[1]='x';
+    sprintf(destiny+2,"%x",number);
+    return destiny;
+}
+
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
     char c;
     int i_cur_word=0,i,current_source_line_word=0,current_source_line=0;
@@ -117,7 +124,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
         }
         //at this point we expect to point to the first char of desired line
         //if we are to write to left write_to_dir=0, if we are to write to right he is 1, if -1 we write to whole line
-        if(write_to_dir==-1){
+        if(write_to_dir==-1){//TODO implement rest!
             i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
             hex_file[i]=what_to_write[0];
             hex_file[i+1]=what_to_write[1];
@@ -148,17 +155,16 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     int current_source_line, current_source_line_word;
     current_source_line_word=0;
     current_source_line=1;
-    int current_hex_pos=0,size_current_word;
+    int current_hex_line=0,current_hex_pos=0,size_current_word; //current_hex_pos -1 = esq, current_hex_dir = 1
     size_current_word=0;
     int i,i_cur_word;
     initialize_hex(hex_file);
     getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
     printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
-
-//    if(strcasecmp(current_word),'.word'){
-//        getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
-
-//    }
+    if(!strcasecmp(current_word,".word")){
+        printf("Got word!\n");
+        //write_to_hex(hex_file,);
+    }
 }
 
 char *fileToVector(FILE *source,int **size_contents){

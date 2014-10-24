@@ -26,16 +26,9 @@ int main(int argc, char* argv[]){
 //    fclose(out);
 //    removeComents(file_contents,size_contents);
 //    convert_word_to_instruction(file_contents,*size_contents);
-
-    char hex_file[18420];
-    initialize_hex(hex_file);
-    //printf("%s",hex_file);
-    char address[6]="0x3fc";
-
-
-
-    write_to_hex(hex_file,address,"meuteste12",-1);
-    printf("%s",hex_file);
+    char temp[10];
+    int_to_hexchar(10,temp);
+    printf("%s",temp);
 
     return 0;
 }
