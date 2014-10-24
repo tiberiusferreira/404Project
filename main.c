@@ -7,9 +7,9 @@
 
 
 int main(int argc, char* argv[]){
-    FILE *in=fopen(argv[1],"r"); //abre o arquivo de entrada passado pela como arg
-    FILE *out=fopen(argv[2],"w+"); //abre o arquivo de saida passado como segundo arg
-    char *file_contents;
+    FILE *in=fopen(argv[1],"r"); //opens input file passed as first arg
+    FILE *out=fopen(argv[2],"w+"); //open output file passed as arg
+    char *file_contents=NULL;
     int *size_contents=NULL; //num_lines stores the number of lines, num_chars is a vector and stores the number
     if(in==NULL) { //of chars in the line which is the index of the vector
         printf("Entrada nao encontrada\n");
@@ -19,12 +19,10 @@ int main(int argc, char* argv[]){
         printf("Arquivo para saida nao encontrado");
         return 1;
     }
-    //retiraComentario(in,out);
-    //file_matriz=fileToMatriz(in,&num_lines,&num_chars);
-    file_contents=fileToVector(in,&size_contents);
-    fclose(in);
-    fclose(out);
-    removeComents(file_contents,size_contents);
+    file_contents=fileToVector(in,&size_contents); //turn read file into a vector of chars
+    fclose(in); //closes input file
+    fclose(out); //closes output file
+    removeComents(file_contents,size_contents); //remove comments of code
     convert_word_to_instruction(file_contents,*size_contents);
 
 //    char temp[10];

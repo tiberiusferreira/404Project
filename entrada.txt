@@ -1,5 +1,7 @@
 .word 0x12345678
 .align 5
-.word 0x12345678
+.word 0x87654321
+.align 5
+.word 0x87654321
 asdas
 asas

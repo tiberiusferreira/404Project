@@ -10,7 +10,8 @@ int getNextWord(char *current_word, int *current_source_line,int *current_source
 void initialize_hex(char *hex_file);
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write, int write_to_dir);
 void convert_word_to_instruction(char *file_contents, int size_file_contents);
-int hexchar_to_int(char *hex);
-char *int_to_hexchar(int number, char *destiny);
+long long hexchar_to_longlong(char *hex);
+char *longlong_to_hexchar_with0x(long long number, char *destiny);
+char *longlong_to_hexchar_without0x(long long number, char *destiny);
 char *remove_0x(char *hex);
 #endif // DEALWITHFILE_H
