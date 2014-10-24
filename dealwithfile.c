@@ -228,7 +228,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     int current_source_line=1, current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
     int current_hex_line=0,current_hex_pos=0,size_current_word=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int i;
-    long long temp_longlong;
+    long long temp_longlong, temp_longlongaux;
     initialize_hex(hex_file);
     while(-1!=getNextWord(current_word,&current_source_line,&current_word_location_in_line,&size_current_word,&i,file_contents,size_file_contents)){
         printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_word_location_in_line);
@@ -255,7 +255,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
             if(is_hexa(current_word)){// current_word now has the data to be inserted ALL data in the IAS has to be in HEXA
                 temp_longlong=hexchar_to_longlong(current_word); //so we need to convert to HEX if necessary
             }else{
-                temp_longlong=strtol(current_word,NULL,10);
+                temp_longlong=strtoll(current_word,NULL,10);
             }
             longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
             write_to_hex(hex_file,current_line_as_hex,current_word,-1);
@@ -272,6 +272,35 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
             current_hex_line++;
         }
         //--.org//
+
+        //--.wfill//
+        if(!strcasecmp(current_word,".wfill")){
+            printf("Got .wfill!\n");
+            //next word should store how many lines are gonna be filled by the data
+            getNextWord(current_word,&current_source_line,&current_word_location_in_line,&size_current_word,&i,file_contents,size_file_contents);
+            if(is_hexa(current_word)){//if is hexa, turn to long long
+                temp_longlong=hexchar_to_longlong(current_word);
+            }else{
+                temp_longlong=strtoll(current_word,NULL,10); // if decimal, convert to long long
+            }
+            //temp_longlong now stores how many lines are gonna be filled by data
+            //now lets store it in a safe variable and call the .word code the amount of time with the data given
+            temp_longlongaux=temp_longlong;
+            getNextWord(current_word,&current_source_line,&current_word_location_in_line,&size_current_word,&i,file_contents,size_file_contents);
+            if(is_hexa(current_word)){// current_word now has the data to be inserted ALL data in the IAS has to be in HEXA
+                temp_longlong=hexchar_to_longlong(current_word); //so we need to convert to HEX if necessary
+            }else{
+                temp_longlong=strtoll(current_word,NULL,10);
+            }
+            for(;temp_longlongaux>0;temp_longlongaux--){
+            //.word code
+            longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
+            write_to_hex(hex_file,current_line_as_hex,current_word,-1);
+            current_hex_line++;
+            //.word code
+            }
+        }
+        //--.wfill//
 
 
         if(!strcasecmp(current_word,"ADD")){
