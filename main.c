@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
 //    char temp[10];
 //    int_to_hexchar(10,temp);
 //    printf("%s",temp);
+//      printf("%d",hexchar_to_int("0xAa"));
 
     return 0;
 }

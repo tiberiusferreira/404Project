@@ -107,7 +107,7 @@ char *int_to_hexchar(int number, char *destiny){
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
     char c;
-    int i_cur_word=0,i,current_source_line_word=0,current_source_line=0;
+    int i_cur_word=0,i=0,current_source_line_word=0,current_source_line=0;
     int target_line=hexchar_to_int(memory_address_to_write);
     //printf("%s",hex_file);
         if(target_line!=current_source_line){ //search for desired line
@@ -148,6 +148,29 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
             hex_file[i+12]=what_to_write[9];
 
         }
+        if(write_to_dir==0){//TODO implement rest!
+            i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
+            hex_file[i]=what_to_write[0];
+            hex_file[i+1]=what_to_write[1];
+
+            hex_file[i+2]=' ';
+
+            hex_file[i+3]=what_to_write[2];
+            hex_file[i+4]=what_to_write[3];
+            hex_file[i+5]=what_to_write[4];
+        }
+        if(write_to_dir==1){//TODO implement rest!
+            i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
+            hex_file[i+7]=what_to_write[0];
+            hex_file[i+8]=what_to_write[1];
+
+            hex_file[i+9]=' ';
+
+
+            hex_file[i+10]=what_to_write[2];
+            hex_file[i+11]=what_to_write[3];
+            hex_file[i+12]=what_to_write[4];
+        }
     }
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
@@ -164,8 +187,8 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     if(!strcasecmp(current_word,".word")){
         printf("Got word!\n");
         getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
-        int_to_hexchar(0,temp);
-        write_to_hex(hex_file,"0xAA",current_word,-1);
+        int_to_hexchar(current_hex_line,temp);
+        write_to_hex(hex_file,temp,current_word,1);
         printf("%s",hex_file);
     }
 }
