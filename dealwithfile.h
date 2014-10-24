@@ -12,4 +12,5 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 void convert_word_to_instruction(char *file_contents, int size_file_contents);
 int hexchar_to_int(char *hex);
 char *int_to_hexchar(int number, char *destiny);
+char *remove_0x(char *hex);
 #endif // DEALWITHFILE_H

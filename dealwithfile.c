@@ -116,6 +116,17 @@ int is_hexa(char *hex){
     return 0;
 }
 
+char *remove_0x(char *hex){
+    int i;
+    for(i=2;;i++){
+        if(hex[i]=='\0'){
+         hex[i]=hex[i-2];
+         return hex;
+        }
+        hex[i]=hex[i-2];
+    }
+}
+
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
     char c;
     int i_cur_word=0,i=0,current_source_line_word=0,current_source_line=0;
@@ -199,27 +210,41 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
 
 
-    if(!strcasecmp(current_word,".align")){
-        printf("Align!\n");
+    if(!strcasecmp(current_word,".align")){ //goes to line which is multiple of given number
+        printf("Got .align!\n");
         getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
         if(is_hexa(current_word)){
-            temp_int=hexchar_to_int(current_word);
+            temp_int=hexchar_to_int(current_word); //if hexa, convert to int
         }else{
-            temp_int=strtol(current_word,NULL,10);
+            temp_int=strtol(current_word,NULL,10); //if int, convert string to int
         }
-        while(current_hex_line%temp_int!=0){
+        while(current_hex_line%temp_int!=0){ //go to line which is multiple of given number
         current_hex_line++;
         }
     }
+    if(!strcasecmp(current_word,".word")){ //puts a data in the next memory location which supports it
+        printf("Got .word!\n");
+        getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+        if(is_hexa(current_word)){// current_word now has the data to be inserted ALL data in the IAS has to be in HEXA
+            temp_int=hexchar_to_int(current_word); //so we need to convert to HEX if necessary
+        }else{
+            temp_int=strtol(current_word,NULL,10);
+        }
+        write_to_hex(hex_file,temp,current_word,-1);
+        current_hex_line++;
+    }
 
-
-    if(!strcasecmp(current_word,".word")){
-        printf("Got word!\n");
+    if(!strcasecmp(current_word,".org")){
+        printf("Got .org!\n");
         getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
         int_to_hexchar(current_hex_line,temp);
         write_to_hex(hex_file,temp,current_word,-1);
         current_hex_line++;
     }
+
+
+
+
     }
     printf("%s",hex_file);
 }
