@@ -1,9 +1,8 @@
+.org 5
+.word 0x876
 .word 0x12345678
 .align 5
 .word 0x87654321
 .align 5
-.word 0x87654321
-.wfill 25 0x12345678
-asdas
-asas
-10 a 35
+
+

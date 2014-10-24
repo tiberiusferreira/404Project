@@ -149,7 +149,7 @@ char *remove_0x(char *hex){
 }
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
-    int i=0,current_source_line=0;
+    int i=0,current_source_line=0,aux=0,amount_to_move=0;
     int target_line=hexchar_to_longlong(memory_address_to_write);
     if(target_line!=current_source_line){ //search for desired line
         for(i=0;i<18414;(i)++){ //go until end of file
@@ -165,6 +165,23 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
     }
     //at this point we expect to point to the first char of desired line
     //if we are to write to left write_to_dir=0, if we are to write to right he is 1, if -1 we write to whole line
+
+    //make sure what_to_write is valid
+    for(aux=0;1;){
+        if(what_to_write[aux]=='\0' && aux!=10){
+         amount_to_move++;
+        }
+        if(aux==10){
+            break;
+        }
+        aux++;
+    }
+    for(aux=0;aux<amount_to_move;aux++){
+        what_to_write[aux+amount_to_move]=what_to_write[aux];
+    }
+    for(aux=0;aux<amount_to_move;aux++){
+        what_to_write[aux]='0';
+    }
     if(write_to_dir==-1){
         if(i+12>18414){ // wanna write beyond hex file size, do not do it
             return;
@@ -267,9 +284,12 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
         if(!strcasecmp(current_word,".org")){
             printf("Got .org!\n");
             getNextWord(current_word,&current_source_line,&current_word_location_in_line,&size_current_word,&i,file_contents,size_file_contents);
-            longlong_to_hexchar_with0x(current_hex_line,temp);
-            write_to_hex(hex_file,temp,current_word,-1);
-            current_hex_line++;
+            if(is_hexa(current_word)){// turn to long long
+                temp_longlong=hexchar_to_longlong(current_word);
+            }else{
+                temp_longlong=strtoll(current_word,NULL,10); //turn to long long
+            }
+            current_hex_line=temp_longlong;
         }
         //--.org//
 
