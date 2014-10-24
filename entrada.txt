@@ -1,3 +1,5 @@
-.word 0x123
+.word 0x12345678
+.align 5
+.word 0x12345678
 asdas
 asas

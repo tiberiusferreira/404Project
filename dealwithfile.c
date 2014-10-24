@@ -11,7 +11,7 @@ void removeComents(char *file_contents,int *size){
         }
     }
 }
-void getNextWord(char *current_word, int *current_source_line,int *current_source_line_word, int *size_current_word, int *i, char *file_contents, int size_file_contents){ //receives file contents and size of it
+int getNextWord(char *current_word, int *current_source_line,int *current_source_line_word, int *size_current_word, int *i, char *file_contents, int size_file_contents){ //receives file contents and size of it
     char c;
     int i_cur_word;
     //printf("%s",hex_file);
@@ -28,6 +28,9 @@ void getNextWord(char *current_word, int *current_source_line,int *current_sourc
         for(i_cur_word=0;;i_cur_word++,(*i)++){
             c=file_contents[*i]; //get each char from file
             if(file_contents[*i]==' ' || file_contents[*i]=='\n' || *i==size_file_contents){//word ended if found whitespace or line break or end of file
+                if(*i==size_file_contents){
+                    return -1;
+                }
                 current_word[i_cur_word]='\0';
                 (*current_source_line_word)++;
                 break;
@@ -35,8 +38,9 @@ void getNextWord(char *current_word, int *current_source_line,int *current_sourc
             current_word[i_cur_word]=file_contents[*i];
         }
         *size_current_word=i_cur_word;
-        return;
+        return 0;
     }
+    return -1;
 }
 
 void initialize_hex(char *hex_file){
@@ -103,6 +107,13 @@ char *int_to_hexchar(int number, char *destiny){
     destiny[1]='x';
     sprintf(destiny+2,"%x",number);
     return destiny;
+}
+
+int is_hexa(char *hex){
+    if(hex[0]=='0' && hex[1]=='x'){
+        return 1;
+    }
+    return 0;
 }
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
@@ -175,22 +186,42 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
     char current_word[101], hex_file[18420],temp[10];
-    int current_source_line, current_source_line_word;
+    int current_source_line, current_source_line_word,temp_int;
     current_source_line_word=0;
     current_source_line=1;
     int current_hex_line=0,current_hex_pos=0,size_current_word; //current_hex_pos -1 = esq, current_hex_dir = 1
     size_current_word=0;
     int i,i_cur_word;
     initialize_hex(hex_file);
-    getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+    while(-1!=getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents)){
+
+
     printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",current_word, current_source_line,current_source_line_word);
+
+
+    if(!strcasecmp(current_word,".align")){
+        printf("Align!\n");
+        getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
+        if(is_hexa(current_word)){
+            temp_int=hexchar_to_int(current_word);
+        }else{
+            temp_int=strtol(current_word,NULL,10);
+        }
+        while(current_hex_line%temp_int!=0){
+        current_hex_line++;
+        }
+    }
+
+
     if(!strcasecmp(current_word,".word")){
         printf("Got word!\n");
         getNextWord(current_word,&current_source_line,&current_source_line_word,&size_current_word,&i,file_contents,size_file_contents);
         int_to_hexchar(current_hex_line,temp);
-        write_to_hex(hex_file,temp,current_word,1);
-        printf("%s",hex_file);
+        write_to_hex(hex_file,temp,current_word,-1);
+        current_hex_line++;
     }
+    }
+    printf("%s",hex_file);
 }
 
 char *fileToVector(FILE *source,int **size_contents){
