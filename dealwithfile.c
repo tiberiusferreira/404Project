@@ -111,10 +111,23 @@ char *longlong_to_hexchar_with0x(long long number, char *destiny){
     sprintf(destiny+2,"%llx",number);
     return destiny;
 }
-
+/*
 char *longlong_to_hexchar_without0x(long long number, char *destiny){
     sprintf(destiny,"%llx",number);
     return destiny;
+}*/
+
+
+char *create_instruction(char *codigo, char *complemento, char* instruction){
+    printf("%s %s",codigo, complemento);
+    instruction[0]=codigo[0];
+    instruction[1]=codigo[1];
+    instruction[2]=complemento[0];
+    instruction[3]=complemento[1];
+    instruction[4]=complemento[2];
+    instruction[5]='\0';
+    printf("==== %s<<",instruction);
+    return instruction;
 }
 
 int is_hexa(char *hex){
@@ -211,7 +224,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 }
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
-    char current_word[101], hex_file[18420],temp[12],current_line_as_hex[5]; //max word is a label of 100 chars, so 101 is max
+    char current_word[101], hex_file[18420],temp[12],current_line_as_hex[5], instruction[6]; //max word is a label of 100 chars, so 101 is max
     int current_source_line=1, current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
     int current_hex_line=0,current_hex_pos=0,size_current_word=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int i;
@@ -260,6 +273,16 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
         }
         //--.org//
 
+
+        if(!strcasecmp(current_word,"ADD")){
+            printf("Got ADD!\n");
+            getNextWord(current_word,&current_source_line,&current_word_location_in_line,&size_current_word,&i,file_contents,size_file_contents);
+            create_instruction("05",current_word,instruction);
+            printf(">>%s<<\n",instruction);
+            longlong_to_hexchar_with0x(current_hex_line,temp);
+            write_to_hex(hex_file,current_line_as_hex,instruction,0);
+            current_hex_line++;
+        }
 
 
 

@@ -14,4 +14,5 @@ long long hexchar_to_longlong(char *hex);
 char *longlong_to_hexchar_with0x(long long number, char *destiny);
 char *longlong_to_hexchar_without0x(long long number, char *destiny);
 char *remove_0x(char *hex);
+char *create_instruction(char *codigo, char *complemento, char* instruction);
 #endif // DEALWITHFILE_H
