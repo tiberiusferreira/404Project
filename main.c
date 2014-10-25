@@ -23,8 +23,9 @@ int main(int argc, char* argv[]){
     fclose(in); //closes input file
     fclose(out); //closes output file
     removeComents(file_contents,size_contents); //remove comments of code
-    expand_dot_set(file_contents,*size_contents);
-    //convert_word_to_instruction(file_contents,*size_contents);
+    expand_dot_set(&file_contents,size_contents);
+    //printf("%s \n %d",file_contents,*size_contents);
+    convert_word_to_instruction(file_contents,*size_contents);
 
 //    char temp[10];
 //    int_to_hexchar(10,temp);

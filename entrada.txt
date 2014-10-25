@@ -1,12 +1,2 @@
-.set BC 1
-.set AB BC
-.org AB
-.word BC
-.word 0x12345678222
-.align 5
-
-.word 0x87654321
-.align 5
-
-
-
+.org 0x100
+.word 2
