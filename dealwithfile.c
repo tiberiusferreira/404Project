@@ -247,7 +247,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 }
 
 void expand_dot_set(char *file_contents, int size_file_contents){
-    word word_in_original,word_in_new,word_see_next,word_see_next_next,word_temp;
+    word word_in_original,word_in_new,word_see_next;
     word_in_original.current_source_line=1;
     word_in_original.current_word_location_in_line=0;
     word_in_original.i=0;
@@ -258,105 +258,116 @@ void expand_dot_set(char *file_contents, int size_file_contents){
     word_in_new.size_current_word=0;
     char text_to_be_changed[101],what_to_change_to[101]; //max word is a label of 100 chars, so 101 is max
     char *new_file_contents;
-    int previous_source_line=1; //current_hex_pos -1 = esq, current_hex_dir = 1
-    int i=0,i2=0,i3=0,aux,number_words_in_file=0;
+    int previous_source_line=1;
+    int i=0,i2,i3,aux,number_words_in_file=0,new_file_size,what_to_change_to_size,did_a_set=0;
+    //count number of words in source so we can allocate a vector the size of worst case scenario
     while(-1!=getNextWord(&word_in_original,file_contents,size_file_contents)){
-           number_words_in_file++;
+        number_words_in_file++;
     }
-    word_in_original=word_in_new; //go back to beginning
+    word_in_original=word_in_new; //go back to beginning, new = beginning at this moment
     new_file_contents = malloc( (100*number_words_in_file+1) * (sizeof(char))); //each word can be up to 100 chars (+1 to store \0)
-    for(i3=0;-1!=getNextWord(&word_in_original,file_contents,size_file_contents);){
+    //copy file contents to new file contents with each word having 100 chars
+    for(i=0;-1!=getNextWord(&word_in_original,file_contents,size_file_contents);){
         if(previous_source_line<word_in_original.current_source_line){ //if the original file jumped a line, jump too
-            new_file_contents[i3]='\n';
-            i3++;
+            new_file_contents[i]='\n';
+            i++;
         }
         previous_source_line=word_in_original.current_source_line;
-
-        for(aux=0;;aux++,i3++){
+        for(aux=0;;aux++,i++){
             if(word_in_original.current_word[aux]=='\0'){
-                for(;aux<100;aux++,i3++){
-                    new_file_contents[i3]=' ';
+                for(;aux<100;aux++,i++){
+                    new_file_contents[i]=' ';
                 }
                 break;
             }
-            new_file_contents[i3]=word_in_original.current_word[aux];
+            new_file_contents[i]=word_in_original.current_word[aux];
         }
-
     }
+    new_file_size=i+1;
+    word_in_original=word_in_new; //word_in_original now points back to beginning again
 
+    //Now the ideia is to go in new_file_contents and search for .set,
+    //once found, start searching while new_file_contents executing the .set
+    //when it gets to the .set line which it is executing, delete it
+    //after it has gone all file, start looking from beginning for more .set
+    //because the file has changed and we cant know how it is now
+    while(-1!=getNextWord(&word_in_original,new_file_contents,new_file_size)){
+        printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_original.current_word, word_in_original.current_source_line,word_in_original.current_word_location_in_line);
+        //--.set//
+        if(!strcasecmp(word_in_original.current_word,".set")){
+            printf("Got .set!\n"); //get what appears in the code and should be replaced
+            if(getNextWord(&word_in_original,new_file_contents,new_file_size)==-1){
+                printf("Set directive incomplete! Missing what to replace!\n");
+                break;
+            }
+            //now current_word has what needs to be replaced in the text, lets store it
+            strcpy(text_to_be_changed,word_in_original.current_word);
+            //now lets store what to change to
+            if(getNextWord(&word_in_original,new_file_contents,new_file_size)==-1){
+                printf("Set directive incomplete! Missing what to replace for!\n");
+                break;
+            }
+            strcpy(what_to_change_to,word_in_original.current_word);
+            what_to_change_to_size=word_in_original.size_current_word;
+            //now go all text replacing it
+            //go to beginning of text
+            word_in_original=word_in_new;
+            //search for word to replace from the beginning
+            for(;-1!=getNextWord(&word_in_original,new_file_contents,new_file_size);){
+                if(!strcasecmp(word_in_original.current_word,".set")){ //if found a .set check if it is not the .set we are executing
+                    //check arguments
+                    word_see_next=word_in_original;
+                    if(getNextWord(&word_see_next,new_file_contents,new_file_size)==-1)
+                    {//if arg does not exist break
+                        break;
+                    }
+                    if(!strcasecmp(word_see_next.current_word,text_to_be_changed)){
+                        //if here first arg is equal, check other one
+                        if(getNextWord(&word_see_next,new_file_contents,new_file_size)==-1){
+                            break;
+                        }
+                        if(!strcasecmp(word_see_next.current_word,what_to_change_to)){
+                            //same set erase it
+                            for(i2=0;i2<word_in_original.size_current_word;i2++){
+                                new_file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                            }
+                            if(getNextWord(&word_in_original,new_file_contents,new_file_size)==-1){
+                                break;
+                            }
+                            for(i2=0;i2<word_in_original.size_current_word;i2++){
+                                new_file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                            }
+                            if(getNextWord(&word_in_original,new_file_contents,new_file_size)==-1){
+                                break;
+                            }
+                            for(i2=0;i2<word_in_original.size_current_word;i2++){
+                                new_file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                            }
+                            if(getNextWord(&word_in_original,new_file_contents,new_file_size)==-1){
+                                break;
+                            }
+                        }
+                    }
+                }
+                //if found a word, overwrite it with new word
+                if(!strcasecmp(word_in_original.current_word,text_to_be_changed)){
+                    for(i2=0;i2<what_to_change_to_size;i2++)
+                        new_file_contents[word_in_original.i-word_in_original.size_current_word+i2]=what_to_change_to[i2];
+                    for(i3=0;i3<(word_in_original.size_current_word-what_to_change_to_size);i2++,i3++){
+                        new_file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                    }
+                    did_a_set=1;
+                }
 
+            }
 
-
-
-
-
-//    new_file_contents = malloc( (3*size_file_contents+1) * (sizeof(char))); //file contents stores the whole file (+1 to store \0)
-//    while(-1!=getNextWord(&word_in_original,file_contents,size_file_contents)){
-//        printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_original.current_word, word_in_original.current_source_line,word_in_original.current_word_location_in_line);
-
-//        //--.set//
-//        if(!strcasecmp(word_in_original.current_word,".set")){ //acts as #define
-//            printf("Got .set!\n"); //get what appears in the code and should be replaced
-//            word_temp=word_in_original;
-//            getNextWord(&word_in_original,file_contents,size_file_contents);
-//            //now current_word has what needs to be replaced in the text, lets store it
-//            strcpy(text_to_be_changed,word_in_original.current_word);
-//            //now lets store what to change to
-//            getNextWord(&word_in_original,file_contents,size_file_contents);
-//            strcpy(what_to_change_to,word_in_original.current_word);
-//            //now go all text replacing it
-//            //go to beginning of text
-//            i2=0;
-//            //get each word from the text and store in a new array
-//            while(-1!=getNextWord(&word_in_new,file_contents,size_file_contents)){
-//                if(previous_source_line<word_in_new.current_source_line){ //if the original file jumped a line, jump too
-//                    new_file_contents[i3]='\n';
-//                    i3++;
-//                }
-//                previous_source_line=word_in_new.current_source_line;
-//                if(!strcasecmp(word_in_new.current_word,".set")){ //if found a .set check if it is not the .set we are executing
-//                    //check arguments
-//                    word_see_next=word_in_new;
-//                    getNextWord(&word_see_next,file_contents,size_file_contents);
-//                    if(!strcasecmp(word_see_next.current_word,text_to_be_changed)){
-//                        //if here first arg is equal, check other one
-//                        getNextWord(&word_see_next,file_contents,size_file_contents);
-//                        if(!strcasecmp(word_see_next.current_word,what_to_change_to)){
-//                            //same set, skip it
-//                            getNextWord(&word_in_new,file_contents,size_file_contents);
-//                            getNextWord(&word_in_new,file_contents,size_file_contents);
-//                            continue;
-//                        }
-//                    }
-
-//                }
-
-//                if(!strcasecmp(word_in_new.current_word,text_to_be_changed)){
-//                    //if found the word it needs to change, copy the new word to the file
-//                    for(aux=0;;aux++,i3++){
-//                        if(what_to_change_to[aux]=='\0'){
-//                            new_file_contents[i3]=' ';
-//                            i3++;
-//                            break;
-//                        }
-//                        new_file_contents[i3]=what_to_change_to[aux];
-//                    }
-//                    continue; //continue so it doesnt copy the original content too
-//                }
-//                //if here, not found text to be changed, simply copy it to new file contents
-//                for(aux=0;;aux++,i3++){
-//                    if(word_in_new.current_word[aux]=='\0'){
-//                        new_file_contents[i3]=' ';
-//                        i3++;
-//                        break;
-//                    }
-//                    new_file_contents[i3]=word_in_new.current_word[aux];
-//                }
-//            }
-//            new_file_contents[i3]='\0';
-//        }
-//        //--.set//
-//    }
+        }
+                        if(did_a_set==1){
+                            word_in_original=word_in_new;
+                            did_a_set=0;
+                        }
+        //--.set//
+    }
     printf("%s",new_file_contents);
 }
 
