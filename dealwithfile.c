@@ -155,7 +155,7 @@ char *remove_0x(char *hex){
 
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
-    int i=0,current_source_line=0,aux=0,amount_to_move=0;
+    int i=0,current_source_line=0,aux=0,amount_to_move=0,tam_what_to_write;
     int target_line=hexchar_to_longlong(memory_address_to_write);
     if(target_line!=current_source_line){ //search for desired line
         for(i=0;i<18414;(i)++){ //go until end of file
@@ -175,12 +175,14 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
     //make sure what_to_write is valid
     for(aux=0;1;){
         if(what_to_write[aux]=='\0'){
+            tam_what_to_write=aux+1;//+1 cause it starts at 0
             amount_to_move=10-aux;
             break;
         }
         aux++;
     }
-    for(aux=0;aux<amount_to_move;aux++){
+    for(aux=(tam_what_to_write-1);aux>=0;aux--){
+
         what_to_write[aux+amount_to_move]=what_to_write[aux];
     }
     for(aux=0;aux<amount_to_move;aux++){
@@ -218,33 +220,35 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
             return;
         }
         i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
-        hex_file[i]=what_to_write[0];
-        hex_file[i+1]=what_to_write[1];
+        hex_file[i]=what_to_write[5];
+        hex_file[i+1]=what_to_write[6];
 
         hex_file[i+2]=' ';
 
-        hex_file[i+3]=what_to_write[2];
-        hex_file[i+4]=what_to_write[3];
-        hex_file[i+5]=what_to_write[4];
+        hex_file[i+3]=what_to_write[7];
+        hex_file[i+4]=what_to_write[8];
+        hex_file[i+5]=what_to_write[9];
     }
     if(write_to_dir==1){
         if(i+12>18414){
             return;
         }
         i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
-        hex_file[i+7]=what_to_write[0];
-        hex_file[i+8]=what_to_write[1];
+        hex_file[i+7]=what_to_write[5];
+        hex_file[i+8]=what_to_write[6];
 
         hex_file[i+9]=' ';
 
 
-        hex_file[i+10]=what_to_write[2];
-        hex_file[i+11]=what_to_write[3];
-        hex_file[i+12]=what_to_write[4];
+        hex_file[i+10]=what_to_write[7];
+        hex_file[i+11]=what_to_write[8];
+        hex_file[i+12]=what_to_write[9];
     }
 }
 
 void expand_dot_set(char **file_contents, int *size_file_contents){
+    printf("Received \n\n%s",(*file_contents));
+    printf("\n\n");
     word word_in_original,word_pointing_to_origin,next_word;
     word_pointing_to_origin.current_source_line=1;
     word_pointing_to_origin.current_word_location_in_line=0;
@@ -261,7 +265,8 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     }
     word_in_original=word_pointing_to_origin; //go back to beginning, new = beginning at this moment
     new_file_contents = malloc( (100*number_words_in_file+1) * (sizeof(char))); //each word can be up to 100 chars (+1 to store \0)
-    //copy file contents to new file contents with each word having 100 chars
+
+    //copy file contents to new file contents with each word having 100 chars//
     for(i=0;-1!=getNextWord(&word_in_original,(*file_contents),(*size_file_contents));){
         if(previous_source_line<word_in_original.current_source_line){ //if the original file jumped a line, jump too
             new_file_contents[i]='\n';
@@ -283,6 +288,8 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
         }
     }
     new_file_size=i+1;
+    //copy file contents to new file contents with each word having 100 chars//
+    printf("\n After copy + all 100 chars : \n %s\n",new_file_contents);
     word_in_original=word_pointing_to_origin; //word_in_original now points back to beginning again
 
     //Now the ideia is to go in new_file_contents and search for .set,
@@ -370,6 +377,8 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     new_file_contents[new_file_size-1]='\0';
     *size_file_contents=new_file_size;
     *file_contents=new_file_contents;
+    printf("Gave \n\n%s",(*file_contents));
+    printf("\n\n");
     //printf("%s",new_file_contents);
 }
 
