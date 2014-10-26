@@ -40,13 +40,11 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
     else if(type==2)
     {
         char pos[6];
-        strcpy(pos,"0");
         int flag=0;
         if(complemento[i++]!='M') return 0;
         if(complemento[i]!='(') return 0;
         for(i=i+1; i<tam_complemento; i++)
         {
-          //  printf("%c ",complemento[i]);
             if(complemento[i]==',')
             {
                 i++;
@@ -56,26 +54,21 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             }
             else if(complemento[i]==')')
             {
-                if(flag)pos[j]='\0';
-                else info[j]='\0';
+                pos[j]='\0';
                 break;
             }
             if(!flag) info[j]=complemento[i];
             else pos[j]=complemento[i];
             j++;
         }
-        printf("info: %s\n");
-        j=strlen(info);
-        info[j]=':';
-        info[j+1]='\0';
         if(strcmp("JMP",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("0:19",pos)==0)
             {
                 instruction[0]='0';
                 instruction[1]='D';
             }
-            else if(strcmp("20:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("20:39",pos)==0)
             {
                 instruction[0]='0';
                 instruction[1]='E';
@@ -83,12 +76,12 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         }
         else if(strcmp("JGEZ",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("0:19",pos)==0)
             {
                 instruction[0]='0';
                 instruction[1]='F';
             }
-            else if(strcmp("20:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("20:39",pos)==0)
             {
                 instruction[0]='1';
                 instruction[1]='0';
@@ -97,12 +90,12 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         }
         else if(strcmp("STOR",codigo)==0)
         {
-            if(strcmp("8:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("8:19",pos)==0)
             {
                 instruction[0]='1';
                 instruction[1]='2';
             }
-            else if(strcmp("28:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("28:39",pos)==0)
             {
                 instruction[0]='1';
                 instruction[1]='3';
@@ -117,12 +110,10 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
     printf("label? %s\n",info);
     if(!is_hexa(info))
     {
-        if(type!=2){
-            j=strlen(info);
-            info[j]=':';
-            info[j+1]='\0';
-        }
-        strcpy(info,get_label_by_name(info,labels).points_to);
+        j=strlen(info);
+        info[j]=':';
+        info[j+1]='\0';
+        strcpy(info,get_label_by_name(info,labels));
         if(!strcasecmp("ERR",info))return 0;
     }
     strcpy(endereco,info);
@@ -281,6 +272,8 @@ char *longlong_to_hexchar_without0x(long long number, char *destiny)
     return destiny;
 }
 
+
+
 int is_hexa(char *hex)
 {
     if(hex[0]=='0' && hex[1]=='x')
@@ -303,6 +296,7 @@ char *remove_0x(char *hex)
         hex[i]=hex[i-2];
     }
 }
+
 
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir)
