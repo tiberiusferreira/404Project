@@ -773,6 +773,11 @@ node *get_label(char *file_contents,int *size_file_contents)
                 char *name= (char*) malloc(sizeof(char)*101);
                 printf("%s is LABEL!",word_in_file.current_word );
                 rotulo label;
+                if(hex_pos==0){
+                    label.aponta_dir=0;
+                }else{
+                    label.aponta_dir=1;
+                }
                 strcpy(name,word_in_file.current_word);
                 label.nome=name;
                 label.endereco=current_hex_line;

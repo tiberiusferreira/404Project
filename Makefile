@@ -46,11 +46,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.c \
-		linkedlist.c \
-		dealwithfile.c 
+		dealwithfile.c \
+		linkedlist.c 
 OBJECTS       = main.o \
-		linkedlist.o \
-		dealwithfile.o
+		dealwithfile.o \
+		linkedlist.o
 DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/qdevice.pri \
 		/Applications/QT/5.3/clang_64/mkspecs/features/device_config.prf \
@@ -146,7 +146,6 @@ DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/qt_config.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/Applications/QT/5.3/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/default_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -162,9 +161,9 @@ DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/exceptions.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/yacc.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/lex.prf \
-		404Project.pro main.c \
-		linkedlist.c \
-		dealwithfile.c
+		404project.pro main.c \
+		dealwithfile.c \
+		linkedlist.c
 QMAKE_TARGET  = 404Project
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = 404Project
@@ -302,7 +301,6 @@ Makefile: 404Project.pro /Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.
 		/Applications/QT/5.3/clang_64/mkspecs/features/qt_config.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/Applications/QT/5.3/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/default_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -318,7 +316,7 @@ Makefile: 404Project.pro /Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.
 		/Applications/QT/5.3/clang_64/mkspecs/features/exceptions.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/yacc.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/lex.prf \
-		404Project.pro
+		404project.pro
 	$(QMAKE) -spec macx-clang CONFIG+=debug CONFIG+=x86_64 -o Makefile 404Project.pro
 /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf:
 /Applications/QT/5.3/clang_64/mkspecs/qdevice.pri:
@@ -415,7 +413,6 @@ Makefile: 404Project.pro /Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.
 /Applications/QT/5.3/clang_64/mkspecs/features/qt_config.prf:
 /Applications/QT/5.3/clang_64/mkspecs/macx-clang/qmake.conf:
 /Applications/QT/5.3/clang_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /Applications/QT/5.3/clang_64/mkspecs/features/exclusive_builds.prf:
 /Applications/QT/5.3/clang_64/mkspecs/features/default_pre.prf:
 /Applications/QT/5.3/clang_64/mkspecs/features/mac/default_pre.prf:
@@ -431,7 +428,7 @@ deployment.pri:
 /Applications/QT/5.3/clang_64/mkspecs/features/exceptions.prf:
 /Applications/QT/5.3/clang_64/mkspecs/features/yacc.prf:
 /Applications/QT/5.3/clang_64/mkspecs/features/lex.prf:
-404Project.pro:
+404project.pro:
 qmake: FORCE
 	@$(QMAKE) -spec macx-clang CONFIG+=debug CONFIG+=x86_64 -o Makefile 404Project.pro
 
@@ -474,12 +471,12 @@ main.o: main.c dealwithfile.h \
 		linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main.o main.c
 
-linkedlist.o: linkedlist.c linkedlist.h
-	$(CC) -c $(CFLAGS) $(INCPATH) -o linkedlist.o linkedlist.c
-
 dealwithfile.o: dealwithfile.c dealwithfile.h \
 		linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o dealwithfile.o dealwithfile.c
+
+linkedlist.o: linkedlist.c linkedlist.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o linkedlist.o linkedlist.c
 
 ####### Install
 
