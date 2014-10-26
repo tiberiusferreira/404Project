@@ -116,7 +116,7 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         strcpy(info,get_label_by_name(info,labels));
         if(!strcasecmp("ERR",info))return 0;
     }
-    else strcpy(endereco,info);
+    strcpy(endereco,info);
     //printf("endereco: %s",endereco);
     i=j=2;
     if(strlen(endereco)>4)
