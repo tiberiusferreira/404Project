@@ -12,6 +12,108 @@ void removeComents(char *file_contents,int *size){
         }
     }
 }
+
+int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int tipo)
+{
+    printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, tipo);
+    int i=0,j=0;
+    char info[101],endereco[6];
+    if(tipo==1)
+    {
+        if(complemento[i++]!='M') return 0;
+        if(complemento[i]!='(') return 0;
+        for(i=i+1; i<tam_complemento; i++)
+        {
+            if(complemento[i]==')')
+            {
+                info[j]='\0';
+                break;
+            }
+            info[j]=complemento[i];
+            j++;
+        }
+    }
+    else if(tipo==2)
+    {
+        char pos[6];
+        int flag=0;
+        if(complemento[i++]!='M') return 0;
+        if(complemento[i]!='(') return 0;
+        for(i=i+1; i<tam_complemento; i++)
+        {
+            if(complemento[i]==',')
+            {
+                i++;
+                info[j]='\0';
+                j=0;
+                flag=1;
+            }
+            else if(complemento[i]==')')
+            {
+                pos[j]='\0';
+                break;
+            }
+            if(!flag) info[j]=complemento[i];
+            else pos[j]=complemento[i];
+            j++;
+        }
+        if(strcmp("JMP",codigo)==0)
+        {
+            if(strcmp("0:19",pos)==0)
+            {
+                instruction[0]='0';
+                instruction[1]='D';
+            }
+            else if(strcmp("20:39",pos)==0)
+            {
+                instruction[0]='0';
+                instruction[1]='E';
+            }
+        }
+        else if(strcmp("JGEZ",codigo)==0)
+        {
+            if(strcmp("0:19",pos)==0)
+            {
+                instruction[0]='0';
+                instruction[1]='F';
+            }
+            else if(strcmp("20:39",pos)==0)
+            {
+                instruction[0]='1';
+                instruction[1]='0';
+            }
+            else return 0;
+        }
+        else if(strcmp("STOR",codigo)==0)
+        {
+            if(strcmp("8:19",pos)==0)
+            {
+                instruction[0]='1';
+                instruction[1]='2';
+            }
+            else if(strcmp("28:39",pos)==0)
+            {
+                instruction[0]='1';
+                instruction[1]='3';
+            }
+            else return 0;
+        }
+    }
+    else if(tipo==3)
+    {
+        strcpy(info,"0x000");
+    }
+    printf("label? %s\n",info);
+    if(!is_hexa(info)) return 0;
+    else strcpy(endereco,info);
+    instruction[2]=endereco[2];
+    instruction[3]=endereco[3];
+    instruction[4]=endereco[4];
+    instruction[5]='\0';
+    return 1;
+}
+
+
 int getNextWord(word *currentword,char *file_contents, int size_file_contents){ //receives file contents and size of it
     char *current_word=currentword->current_word;
     int *current_source_line=&(currentword->current_source_line);
@@ -128,17 +230,6 @@ char *longlong_to_hexchar_without0x(long long number, char *destiny){
 }
 
 
-char *create_instruction(char *codigo, char *complemento, char* instruction){
-    printf("%s %s",codigo, complemento);
-    instruction[0]=codigo[0];
-    instruction[1]=codigo[1];
-    instruction[2]=complemento[0];
-    instruction[3]=complemento[1];
-    instruction[4]=complemento[2];
-    instruction[5]='\0';
-    printf("==== %s<<",instruction);
-    return instruction;
-}
 
 int is_hexa(char *hex){
     if(hex[0]=='0' && hex[1]=='x'){
@@ -584,10 +675,11 @@ char *get_label_by_name(char *name,node *labels){
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
     //printf("%s %d\n",file_contents,size_file_contents);
-    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6]; //max word is a label of 100 chars, so 101 is max
+    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
     int current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
     int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int i=0;
+    int ins=0,hex_pos=0;
     node *label_list=get_label(file_contents,&size_file_contents);
     word word_in_file;
     word_in_file.current_source_line=1;
@@ -676,20 +768,115 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
         //--.wfill//
 
 
-        if(!strcasecmp(word_in_file.current_word,"ADD")){
-            printf("Got ADD!\n");
-            getNextWord(&word_in_file,file_contents,size_file_contents);
-            create_instruction("05",word_in_file.current_word,instruction);
-            printf(">>%s<<\n",instruction);
-            longlong_to_hexchar_with0x(current_hex_line,temp);
-            write_to_hex(hex_file,current_line_as_hex,instruction,0);
-            current_hex_line++;
+        if(!strcasecmp(word_in_file.current_word,"LDMQ"))
+        {
+            strcpy(instruction,"0A000");
+            ins=3;
         }
-
-
-
+        else if(!strcasecmp(word_in_file.current_word,"LDMQM"))
+        {
+            strcpy(instruction,"09000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"STR"))
+        {
+            strcpy(instruction,"21000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"LOAD"))
+        {
+            strcpy(instruction,"01000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"LDN"))
+        {
+            strcpy(instruction,"02000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"LDABS"))
+        {
+            strcpy(instruction,"03000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"MUL"))
+        {
+            strcpy(instruction,"0B000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"DIV"))
+        {
+            strcpy(instruction,"0C000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"JMP"))
+        {
+            strcpy(instruction,"0D000");//0E
+            ins=2;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"JGEZ"))
+        {
+            strcpy(instruction,"0F000");//10
+            ins=2;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"ADDABS"))
+        {
+            strcpy(instruction,"07000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"ADD"))
+        {
+             strcpy(instruction,"05000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"SUBABS"))
+        {
+            strcpy(instruction,"08000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"SUB"))
+        {
+             strcpy(instruction,"06000");
+            ins=1;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"LSH"))
+        {
+            strcpy(instruction,"14000");
+            ins=3;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"RSH"))
+        {
+            strcpy(instruction,"15000");
+            ins=3;
+        }
+        else if(!strcasecmp(word_in_file.current_word,"STM"))
+        {
+            strcpy(instruction,"12000");//13
+            ins=2;
+        }
+        if(ins>0)
+        {
+            strcpy(code,word_in_file.current_word);
+            if(ins!=3)  getNextWord(&word_in_file,file_contents,size_file_contents);
+            if(!create_instruction(code,word_in_file.current_word,word_in_file.size_current_word,instruction,ins)) printf("ERROR!!!\n");
+            else
+            {
+                //printf("instruction: (%s) current_hex_pos:%d\n",instruction,hex_pos);
+                longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
+                write_to_hex(hex_file,current_line_as_hex,instruction,hex_pos);
+                if(hex_pos==0){
+                    hex_pos=1;
+                }
+                else if(hex_pos==1)
+                {
+                    current_hex_line++;
+                    hex_pos=0;
+                }
+            }
+        }
+        ins=0;
 
     }
+
     printf("%s",hex_file);
 }
 
