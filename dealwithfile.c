@@ -788,20 +788,23 @@ node *get_label(char *file_contents,int *size_file_contents)
     return label_list;
 
 }
-char *get_label_by_name(char *name,node *labels)
+label_plus get_label_by_name(char *name,node *labels)
 {
     rotulo wanted = busca(labels,name);
     char *address;
     address = (char*) malloc(sizeof(char)*5);
-
+    label_plus my_label_plus;
     if(wanted.endereco==-1)
     {
         printf("Rotulo %s inexistente\n",name);
         address="ERR";
-        return address;
+        my_label_plus.points_to=address;
+        return my_label_plus;
     }
     longlong_to_hexchar_with0x(wanted.endereco,address);
-    return address;
+    my_label_plus.points_to=address;
+    my_label_plus.points_to_dir=wanted.aponta_dir;
+    return my_label_plus;
 }
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents)

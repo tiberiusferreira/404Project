@@ -13,8 +13,13 @@ typedef struct Word //Stores info about a word in a vector
     int size_current_word;
     int i;
 } word;
+typedef struct _label_plus //Stores info about a word in a vector
+{
+    char *points_to;
+    int points_to_dir;
+} label_plus;
 int is_hexa(char *hex);
-char *get_label_by_name(char *name, node *labels);
+label_plus get_label_by_name(char *name, node *labels);
 node *get_label(char *file_contents, int *size_file_contents);
 void removeComents(char *file_contents,int *size);
 char *fileToVector(FILE *source, int **size_contents);
