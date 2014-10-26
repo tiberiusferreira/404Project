@@ -163,6 +163,8 @@ char *remove_0x(char *hex){
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir){
     int i=0,current_source_line=0,aux=0,amount_to_move=0,tam_what_to_write;
     int target_line=hexchar_to_longlong(memory_address_to_write);
+    char what_to_write_full[11];
+    strcpy(what_to_write_full,what_to_write);
     if(target_line!=current_source_line){ //search for desired line
         for(i=0;i<18414;(i)++){ //go until end of file
             if(hex_file[i]=='\n'){ //if finds a line break increase source code line counter
@@ -180,7 +182,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 
     //make sure what_to_write is valid
     for(aux=0;1;){
-        if(what_to_write[aux]=='\0'){
+        if(what_to_write_full[aux]=='\0'){
             tam_what_to_write=aux+1;//+1 cause it starts at 0
             amount_to_move=10-aux;
             break;
@@ -189,36 +191,36 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
     }
     for(aux=(tam_what_to_write-1);aux>=0;aux--){
 
-        what_to_write[aux+amount_to_move]=what_to_write[aux];
+        what_to_write_full[aux+amount_to_move]=what_to_write_full[aux];
     }
     for(aux=0;aux<amount_to_move;aux++){
-        what_to_write[aux]='0';
+        what_to_write_full[aux]='0';
     }
     if(write_to_dir==-1){
         if(i+12>18414){ // wanna write beyond hex file size, do not do it
             return;
         }
         i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
-        hex_file[i]=what_to_write[0];
-        hex_file[i+1]=what_to_write[1];
+        hex_file[i]=what_to_write_full[0];
+        hex_file[i+1]=what_to_write_full[1];
 
         hex_file[i+2]=' ';
 
-        hex_file[i+3]=what_to_write[2];
-        hex_file[i+4]=what_to_write[3];
-        hex_file[i+5]=what_to_write[4];
+        hex_file[i+3]=what_to_write_full[2];
+        hex_file[i+4]=what_to_write_full[3];
+        hex_file[i+5]=what_to_write_full[4];
 
         hex_file[i+6]=' ';
 
-        hex_file[i+7]=what_to_write[5];
-        hex_file[i+8]=what_to_write[6];
+        hex_file[i+7]=what_to_write_full[5];
+        hex_file[i+8]=what_to_write_full[6];
 
         hex_file[i+9]=' ';
 
 
-        hex_file[i+10]=what_to_write[7];
-        hex_file[i+11]=what_to_write[8];
-        hex_file[i+12]=what_to_write[9];
+        hex_file[i+10]=what_to_write_full[7];
+        hex_file[i+11]=what_to_write_full[8];
+        hex_file[i+12]=what_to_write_full[9];
 
     }
     if(write_to_dir==0){
@@ -226,29 +228,29 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
             return;
         }
         i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
-        hex_file[i]=what_to_write[5];
-        hex_file[i+1]=what_to_write[6];
+        hex_file[i]=what_to_write_full[5];
+        hex_file[i+1]=what_to_write_full[6];
 
         hex_file[i+2]=' ';
 
-        hex_file[i+3]=what_to_write[7];
-        hex_file[i+4]=what_to_write[8];
-        hex_file[i+5]=what_to_write[9];
+        hex_file[i+3]=what_to_write_full[7];
+        hex_file[i+4]=what_to_write_full[8];
+        hex_file[i+5]=what_to_write_full[9];
     }
     if(write_to_dir==1){
         if(i+12>18414){
             return;
         }
         i=i+4; //AAA DD DDD DD DDD is the format there, we were pointing to the first A, now to first D
-        hex_file[i+7]=what_to_write[5];
-        hex_file[i+8]=what_to_write[6];
+        hex_file[i+7]=what_to_write_full[5];
+        hex_file[i+8]=what_to_write_full[6];
 
         hex_file[i+9]=' ';
 
 
-        hex_file[i+10]=what_to_write[7];
-        hex_file[i+11]=what_to_write[8];
-        hex_file[i+12]=what_to_write[9];
+        hex_file[i+10]=what_to_write_full[7];
+        hex_file[i+11]=what_to_write_full[8];
+        hex_file[i+12]=what_to_write_full[9];
     }
 }
 
@@ -422,13 +424,11 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
             //go to beginning of text
             word_in_original=word_pointing_to_origin;
             change_word_A_to_word_B(text_to_be_changed,what_to_change_to,what_to_change_to_size,file_contents,size_file_contents);
-
             //--.set//
         }
     }
-    //getting rid of white spaces //TODO
     printf("Expanding done, returning following file:\n%s\n",*file_contents);
-    printf("Shrinking it...");
+    printf("Shrinking it..."); //getting rid of white spaces
     shrink_file(file_contents,size_file_contents);
     printf("Result:\n%s\n",*file_contents);
 }
@@ -438,10 +438,8 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
 
     char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6]; //max word is a label of 100 chars, so 101 is max
     int current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
-    int current_hex_line=0,current_hex_pos=0,size_current_word=0; //current_hex_pos -1 = esq, current_hex_dir = 1
+    int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int i=0;
-
-
     word word_in_file;
     word_in_file.current_source_line=1;
     word_in_file.current_word_location_in_line=0;
@@ -449,6 +447,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     word_in_file.size_current_word=0;
     long long temp_longlong, temp_longlongaux;
     initialize_hex(hex_file);
+    write_to_hex(hex_file,"0x22","awes",-1);
     while(-1!=getNextWord(&word_in_file,file_contents,size_file_contents)){
         printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_file.current_word, word_in_file.current_source_line,word_in_file.current_word_location_in_line);
 
@@ -534,6 +533,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
             write_to_hex(hex_file,current_line_as_hex,instruction,0);
             current_hex_line++;
         }
+
 
 
 

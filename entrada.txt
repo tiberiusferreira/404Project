@@ -1,4 +1,4 @@
-.set   asda
+.set CODIGO  0x000
 .set DADOS   0x100
 .set TAMANHO 200
 .org CODIGO
