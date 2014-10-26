@@ -645,7 +645,7 @@ node *get_label(char *file_contents,int *size_file_contents){
             }
 
                 }
-        for(i=0;i<word_in_file.size_current_word-1;i++){
+        for(i=0;i<word_in_file.size_current_word;i++){
             c=word_in_file.current_word[i];
         if( (word_in_file.current_word[i]==':' && i==(word_in_file.size_current_word-1)) || (word_in_file.current_word[i]==':' && word_in_file.current_word[i+1]==' ')){
             char *name= (char*) malloc(sizeof(char)*101);
@@ -658,7 +658,7 @@ node *get_label(char *file_contents,int *size_file_contents){
         }
         }
     }
-
+    return label_list;
 
 }
 char *get_label_by_name(char *name,node *labels){
@@ -692,7 +692,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     char label[]="mylabel:";
     char *address;
     address = get_label_by_name(label,label_list);
-    printf("Address = %s",address);
+    printf("\n\nAddress = %s\n\n",address);
     while(-1!=getNextWord(&word_in_file,file_contents,size_file_contents)){
         printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_file.current_word, word_in_file.current_source_line,word_in_file.current_word_location_in_line);
         //--.align//
