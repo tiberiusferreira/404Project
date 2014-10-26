@@ -1,0 +1,8 @@
+.org 0x000
+laco:
+  LOAD  M(x)
+  SUB   M(y)
+  JEGZ M(laco)
+.align 1
+x: .word 0000000001
+y: .word 0000000002

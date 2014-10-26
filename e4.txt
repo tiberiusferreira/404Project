@@ -1,0 +1,7 @@
+.org 0x000
+JUMP M(0x000)
+.align 1
+vetor: 
+  .wfill 0xC8, 00 00 00 00 01
+x: 
+  .word 00 00 00 00 02

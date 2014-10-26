@@ -1,0 +1,9 @@
+.org 0x100
+var_x:
+.org 0x200
+var_y:
+.org 0x000
+laco:
+LOAD M(var_x)
+SUB  M(var_y)
+JUMP M(laco)
