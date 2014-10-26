@@ -1,9 +1,2 @@
-.word 0x12345678
-.align 5
-.word 0x87654321
-.align 5
-.word 0x87654321
-.wfill 25 0x12345678
-asdas
-asas
-10 a 35
+.org 0x100
+.word 0x2222
