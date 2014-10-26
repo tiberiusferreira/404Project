@@ -610,12 +610,10 @@ node *get_label(char *file_contents,int *size_file_contents){
 
 
         if(!strcasecmp(word_in_file.current_word,"ADD")){
-            printf("Got ADD!\n");
             getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get arg
             if(hex_pos==0){
                 hex_pos=1;
-            }
-            if(hex_pos==1){
+            }else if(hex_pos==1){
                 hex_pos=0;
                 current_hex_line++;
             }
@@ -632,8 +630,7 @@ node *get_label(char *file_contents,int *size_file_contents){
             getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get arg
             if(hex_pos==0){
                 hex_pos=1;
-            }
-            if(hex_pos==1){
+            }else if(hex_pos==1){
                 hex_pos=0;
                 current_hex_line++;
             }
@@ -642,8 +639,7 @@ node *get_label(char *file_contents,int *size_file_contents){
                 || (!strcasecmp(word_in_file.current_word,"RSH"))){
             if(hex_pos==0){
                 hex_pos=1;
-            }
-            if(hex_pos==1){
+            }else if(hex_pos==1){
                 hex_pos=0;
                 current_hex_line++;
             }
@@ -693,10 +689,10 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     long long temp_longlong, temp_longlongaux;
     initialize_hex(hex_file);
     //search example
-    char label[]="mylabel:";
+    visualiza(label_list);
     char *address;
-    address = get_label_by_name(label,label_list);
-    printf("\n\nAddress = %s\n\n",address);
+    //address = get_label_by_name(label,label_list);
+    //printf("\n\nAddress = %s\n\n",address);
     while(-1!=getNextWord(&word_in_file,file_contents,size_file_contents)){
         printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_file.current_word, word_in_file.current_source_line,word_in_file.current_word_location_in_line);
         //--.align//

@@ -1,6 +1,8 @@
 soma: LDMQ #0A
 blablabla:
+rotulo1:
 LDMQM M(0x100) #09
+rotulo2:
 STR M(0x100)#21
 LOAD M(0x100)#01
 LDN M(0x100)#02
@@ -18,4 +20,4 @@ DIV M(0x100) #0C
 LSH #14
 RSH #15
 var_x: STM M(0x100,8:19)#12
-STM M(blablabla,28:19)#13
+STM M(blablabla,28:19)olamundo
