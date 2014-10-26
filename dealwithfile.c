@@ -22,7 +22,7 @@ int getNextWord(word *currentword,char *file_contents, int size_file_contents){ 
     int i_cur_word;
     for(;(*i)<size_file_contents;){ //go through all file
         c=file_contents[*i]; //get each char from file
-        for(; (file_contents[*i]==' ' || file_contents[*i]=='\n') && (*i)<size_file_contents; (*i)++){ //jump white spaces and line breaks
+        for(; (file_contents[*i]==' ' || file_contents[*i]=='\n' || file_contents[*i]=='\0') && (*i)<size_file_contents; (*i)++){ //jump white spaces and line breaks
             if(file_contents[*i]=='\n'){ //if finds a line break increase source code line counter
                 (*current_source_line_word)=0;
                 (*current_source_line)++;
@@ -33,7 +33,7 @@ int getNextWord(word *currentword,char *file_contents, int size_file_contents){ 
         for(i_cur_word=0; ;i_cur_word++,(*i)++){
             c=file_contents[*i]; //get each char from file
             if(file_contents[*i]==' ' || file_contents[*i]=='\n' || *i==size_file_contents){//word ended if found whitespace or line break or end of file
-                if((*i==size_file_contents) && (file_contents[*i]==' ' || file_contents[*i]=='\n')){
+                if((*i==size_file_contents) && (file_contents[*i]==' ' || file_contents[*i]=='\n' || ( (file_contents[*i]=='\0') && (i_cur_word==0) ))){
                     return -1;//end of file and last char was not a valid word char
                 }
                 if(*i==size_file_contents){
@@ -301,7 +301,7 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
     word_pointing_to_origin.size_current_word=0;
     word_in_original=word_pointing_to_origin;
     int i=0,i2,i3,i4;
-    printf("Called to change word %s to %s.\nReceived file:\n%s\nEOF\n",text_to_be_changed,what_to_change_to,*file_contents);
+    //printf("Called to change word %s to %s.\nReceived file:\n%s\nEOF\n",text_to_be_changed,what_to_change_to,*file_contents);
 
     for(;-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents));){
         if(!strcasecmp(word_in_original.current_word,".set")){ //if found a .set check if it is not the .set we are executing
@@ -334,9 +334,9 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
         if(!strcasecmp(word_in_original.current_word,text_to_be_changed)){
             printf("Changing following word in original text: %s For %s\n",word_in_original.current_word,what_to_change_to);
             for(i2=0;i2<what_to_change_to_size;i2++){
-//                for(i4=0;i4<*size_file_contents;i4++){
-//                    printf("char in %d: %c\n",i4,*file_contents[i4]);
-//                }
+                //                for(i4=0;i4<*size_file_contents;i4++){
+                //                    printf("char in %d: %c\n",i4,*file_contents[i4]);
+                //                }
                 (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=what_to_change_to[i2];
             }
             for(i3=0;i3<(word_in_original.size_current_word-what_to_change_to_size);i2++,i3++){
@@ -346,6 +346,36 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
         }
 
     }
+}
+
+void shrink_file(char **file_contents, int *size_file_contents){
+    word word_in_original,word_pointing_to_origin;
+    word_pointing_to_origin.current_source_line=1;
+    word_pointing_to_origin.current_word_location_in_line=0;
+    word_pointing_to_origin.i=0;
+    word_pointing_to_origin.size_current_word=0;
+    word_in_original=word_pointing_to_origin;
+    char *new_file_contents;
+    int i,i2,previous_source_line;
+    new_file_contents = (char*) malloc(sizeof(char)*((*size_file_contents)+1));
+    for(i=0;-1!=getNextWord(&word_in_original,(*file_contents),(*size_file_contents));){
+        if(previous_source_line<word_in_original.current_source_line){ //if the original file jumped a line, jump too
+            new_file_contents[i]='\n';
+            i++;
+        }
+        previous_source_line=word_in_original.current_source_line;
+        for(i2=0;i2<word_in_original.size_current_word;i2++,i++){
+            new_file_contents[i]=word_in_original.current_word[i2];
+            if(i2+1==word_in_original.size_current_word){
+                i++;
+                new_file_contents[i]=' ';
+            }
+        }
+    }
+    new_file_contents[i]='\0';
+    //printf("%s",new_file_contents);
+    (*file_contents)=new_file_contents;
+    (*size_file_contents)=i;
 }
 
 void expand_dot_set(char **file_contents, int *size_file_contents){
@@ -390,11 +420,14 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
             word_in_original=word_pointing_to_origin;
             change_word_A_to_word_B(text_to_be_changed,what_to_change_to,what_to_change_to_size,file_contents,size_file_contents);
 
-        //--.set//
+            //--.set//
         }
     }
     //getting rid of white spaces //TODO
     printf("Expanding done, returning following file:\n%s\n",*file_contents);
+    printf("Shrinking it...");
+    shrink_file(file_contents,size_file_contents);
+    printf("Result:\n%s\n",*file_contents);
 }
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
