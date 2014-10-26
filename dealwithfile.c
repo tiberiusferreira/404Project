@@ -19,9 +19,9 @@ void removeComents(char *file_contents,int *size)
 
 int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int type, node *labels)
 {
-    printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, type);
+    //printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, type);
     int i=0,j=0;
-    char info[101],endereco[6];
+    char info[102],endereco[6];
     if(type==1)
     {
         if(complemento[i++]!='M') return 0;
@@ -110,11 +110,14 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
     printf("label? %s\n",info);
     if(!is_hexa(info))
     {
+        j=strlen(info);
+        info[j]=':';
+        info[j+1]='\0';
         strcpy(info,get_label_by_name(info,labels));
-        // if(strcasecmp("vazio",info))return 0;
+        if(!strcasecmp("ERR",info))return 0;
     }
     else strcpy(endereco,info);
-    printf("endereco: %s",endereco);
+    //printf("endereco: %s",endereco);
     i=j=2;
     if(strlen(endereco)>4)
     {
