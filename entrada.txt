@@ -1,4 +1,4 @@
 .set Awd 2
-.set A 1
-.org aWD
-.word a
+.set _Awedax2 0x86
+.org _Awedax2
+.word ok!

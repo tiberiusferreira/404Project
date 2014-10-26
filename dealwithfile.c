@@ -267,7 +267,7 @@ void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents){
     word_in_original=word_pointing_to_origin; //go back to beginning, new = beginning at this moment
     new_file_contents = malloc( (100*number_words_in_file+1) * (sizeof(char))); //each word can be up to 100 chars (+1 to store \0)
     for(i=0;-1!=getNextWord(&word_in_original,(*file_contents),(*size_file_contents));){
-        printf("Putting %s word in file with 100 chars.\n",word_in_original.current_word);
+        //printf("Putting %s word in file with 100 chars.\n",word_in_original.current_word);
         if(previous_source_line<word_in_original.current_source_line){ //if the original file jumped a line, jump too
             new_file_contents[i]='\n';
             i++;
@@ -300,8 +300,9 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
     word_pointing_to_origin.i=0;
     word_pointing_to_origin.size_current_word=0;
     word_in_original=word_pointing_to_origin;
-    int i=0,i2,i3;
-    printf("Called to change word %s to %s.",text_to_be_changed,what_to_change_to);
+    int i=0,i2,i3,i4;
+    printf("Called to change word %s to %s.\nReceived file:\n%s\nEOF\n",text_to_be_changed,what_to_change_to,*file_contents);
+
     for(;-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents));){
         if(!strcasecmp(word_in_original.current_word,".set")){ //if found a .set check if it is not the .set we are executing
             //check arguments
@@ -318,24 +319,28 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
                 if(!strcasecmp(next_word.current_word,what_to_change_to)){
                     //same set erase it, erase the .set arg1 and arg2
                     for(i=0;i<3;i++){
-//                        for(i2=0;i2<word_in_original.size_current_word;i2++){
-//                            *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
-//                        }
-//                        if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
-//                            break;
-//                        }
+                        for(i2=0;i2<word_in_original.size_current_word;i2++){
+                            (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                        }
+                        if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
+                            break;
+                        }
                     }
                 }
             }
         }
         //if found a word, overwrite it with new word
-        printf("Comparing word %s to %s.\n",word_in_original.current_word,text_to_be_changed);
+        //printf("Comparing word %s to %s.\n",word_in_original.current_word,text_to_be_changed);
         if(!strcasecmp(word_in_original.current_word,text_to_be_changed)){
-            printf("Changing following word in original text: %s\nFor %s\n",word_in_original.current_word,what_to_change_to);
-            for(i2=0;i2<what_to_change_to_size;i2++)
-                *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=what_to_change_to[i2];
+            printf("Changing following word in original text: %s For %s\n",word_in_original.current_word,what_to_change_to);
+            for(i2=0;i2<what_to_change_to_size;i2++){
+//                for(i4=0;i4<*size_file_contents;i4++){
+//                    printf("char in %d: %c\n",i4,*file_contents[i4]);
+//                }
+                (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=what_to_change_to[i2];
+            }
             for(i3=0;i3<(word_in_original.size_current_word-what_to_change_to_size);i2++,i3++){
-                *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+                (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=' ';
             }
 
         }
@@ -356,7 +361,7 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     int i=0,i2,i3,i4,what_to_change_to_size,did_a_set=0;
     //copy file contents to new file contents with each word having 100 chars//
     turn_text_word_in_100_chars(file_contents,size_file_contents);
-    printf("After turning each word to 100 chars:\n%s\nEND",*file_contents);
+    printf("After turning each word to 100 chars:\n%s\nEND\n",*file_contents);
     /*Now the ideia is to go in *file_contents and search for .set,
     once found, start searching while *file_contents executing the .set
     when it gets to the .set line which it is executing, delete it
