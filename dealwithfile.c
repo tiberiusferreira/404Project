@@ -13,12 +13,12 @@ void removeComents(char *file_contents,int *size){
     }
 }
 
-int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int tipo)
+int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int type, node *labels)
 {
-    printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, tipo);
+    printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, type);
     int i=0,j=0;
     char info[101],endereco[6];
-    if(tipo==1)
+    if(type==1)
     {
         if(complemento[i++]!='M') return 0;
         if(complemento[i]!='(') return 0;
@@ -33,7 +33,7 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             j++;
         }
     }
-    else if(tipo==2)
+    else if(type==2)
     {
         char pos[6];
         int flag=0;
@@ -99,13 +99,17 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             else return 0;
         }
     }
-    else if(tipo==3)
+    else if(type==3)
     {
         strcpy(info,"0x000");
     }
     printf("label? %s\n",info);
-    if(!is_hexa(info)) return 0;
+    if(!is_hexa(info)){
+        strcpy(info,get_label_by_name(info,labels));
+       // if(strcasecmp("vazio",info))return 0;
+    }
     else strcpy(endereco,info);
+    printf("endereco: %s",endereco);
     instruction[2]=endereco[2];
     instruction[3]=endereco[3];
     instruction[4]=endereco[4];
@@ -857,7 +861,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
         {
             strcpy(code,word_in_file.current_word);
             if(ins!=3)  getNextWord(&word_in_file,file_contents,size_file_contents);
-            if(!create_instruction(code,word_in_file.current_word,word_in_file.size_current_word,instruction,ins)) printf("ERROR!!!\n");
+            if(!create_instruction(code,word_in_file.current_word,word_in_file.size_current_word,instruction,ins,label_list)) printf("ERROR!!!\n");
             else
             {
                 //printf("instruction: (%s) current_hex_pos:%d\n",instruction,hex_pos);
