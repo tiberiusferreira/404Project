@@ -64,7 +64,6 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             else pos[j]=complemento[i];
             j++;
         }
-        printf("info: %s\n");
         j=strlen(info);
         info[j]=':';
         info[j+1]='\0';
@@ -822,13 +821,14 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
     char hex_file[18420],current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
     int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int ins=0,hex_pos=0;
+
     node *label_list=get_label(file_contents,&size_file_contents);
     word word_in_file;
     word_in_file.current_source_line=1;
     word_in_file.current_word_location_in_line=0;
     word_in_file.i=0;
     word_in_file.size_current_word=0;
-    long long temp_longlong, temp_longlongaux;
+    long long temp_longlong, temp_longlongaux,check_number;
     initialize_hex(hex_file);
     //search example
     visualiza(label_list);
@@ -842,14 +842,22 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
         if(!strcasecmp(word_in_file.current_word,".align"))  //goes to line which is multiple of given number
         {
             printf("Got .align!\n");
-            getNextWord(&word_in_file,file_contents,size_file_contents);
+            getNextWord(&word_in_file,file_contents,size_file_contents);            
             if(is_hexa(word_in_file.current_word))  //if word was given in hexa, turn to long long
             {
-                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+//                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+//                if(sscanf(temp_longlong, "%ll", check_number) !=1){
+//                    printf(".align not getting number");
+//                    exit (1);
+//                }
             }
             else   //if given in decimal base, convert string to number
             {
                 temp_longlong=strtoll(word_in_file.current_word,NULL,10); //if int, convert string to long long
+//                if(sscanf(temp_longlong, "%ll", check_number) !=1){
+//                    printf(".align not getting number");
+//                    exit (1);
+//                }
             }
             while(current_hex_line%temp_longlong!=0)  //go to line which is multiple of given number
             {
