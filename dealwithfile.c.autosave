@@ -341,7 +341,7 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to, 
 
 void expand_dot_set(char **file_contents, int *size_file_contents){
     printf("Expanding .set directives...\nGot following file:\n%s\n",*file_contents);
-    word word_in_original,word_pointing_to_origin;
+    word word_in_original,word_pointing_to_origin,next_word;
     word_pointing_to_origin.current_source_line=1;
     word_pointing_to_origin.current_word_location_in_line=0;
     word_pointing_to_origin.i=0;
@@ -349,7 +349,7 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     word_in_original=word_pointing_to_origin;
     char text_to_be_changed[101],what_to_change_to[101]; //max word is a label of 100 chars, so 101 is max to get \0 in
     char c; //gonna be the new file where all words take 101 chars
-    int what_to_change_to_size;
+    int i=0,i2,i3,i4,what_to_change_to_size,did_a_set=0;
     //copy file contents to new file contents with each word having 100 chars//
     turn_text_word_in_100_chars(file_contents,size_file_contents);
     printf("After turning each word to 100 chars:\n%s\n",*file_contents);
@@ -378,11 +378,11 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
             //now go all text replacing it
             //go to beginning of text
             word_in_original=word_pointing_to_origin;
-
+        
         //--.set//
         }
     }
-
+   
     *size_file_contents=(*size_file_contents);
     *file_contents=*file_contents;
     //getting rid of white spaces //TODO
