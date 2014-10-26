@@ -3,7 +3,7 @@
 .set UM, 00 00 00 00 01
 .set INICIO, 0x000
 .org INICIO
-JUMP M(INICIO)
+JMP M(INICIO)
 .align 1
 vetor1: .wfill TAMANHO, ZERO
 vetor2: .wfill TAMANHO, UM

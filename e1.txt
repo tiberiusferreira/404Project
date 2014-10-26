@@ -2,7 +2,7 @@
 laco:
   LOAD  M(x)
   SUB   M(y)
-  JEGZ M(laco)
+  JGEZ M(laco)
 .align 1
 x: .word 0000000001
 y: .word 0000000002

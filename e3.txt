@@ -6,4 +6,4 @@ var_y:
 laco:
 LOAD M(var_x)
 SUB  M(var_y)
-JUMP M(laco)
+JMP M(laco)
