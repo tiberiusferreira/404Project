@@ -433,13 +433,12 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     printf("Result:\n%s\n",*file_contents);
 }
 
-void convert_word_to_instruction(char *file_contents, int size_file_contents){
-    //printf("%s %d\n",file_contents,size_file_contents);
-
-    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6]; //max word is a label of 100 chars, so 101 is max
+node *get_label(char *file_contents,int *size_file_contents){
+    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6],c; //max word is a label of 100 chars, so 101 is max
     int current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
-    int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
+    int current_hex_line=0,hex_pos=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int i=0;
+    node *label_list = cria();
     word word_in_file;
     word_in_file.current_source_line=1;
     word_in_file.current_word_location_in_line=0;
@@ -447,10 +446,163 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents){
     word_in_file.size_current_word=0;
     long long temp_longlong, temp_longlongaux;
     initialize_hex(hex_file);
-    write_to_hex(hex_file,"0x22","awes",-1);
+    while(-1!=getNextWord(&word_in_file,file_contents,*size_file_contents)){
+        printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_file.current_word, word_in_file.current_source_line,word_in_file.current_word_location_in_line);
+        //--.align//
+        if(!strcasecmp(word_in_file.current_word,".align")){ //goes to line which is multiple of given number
+            printf("Got .align!\n");
+            getNextWord(&word_in_file,file_contents,(*size_file_contents));
+            if(is_hexa(word_in_file.current_word)){ //if word was given in hexa, turn to long long
+                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+            }else{ //if given in decimal base, convert string to number
+                temp_longlong=strtoll(word_in_file.current_word,NULL,10); //if int, convert string to long long
+            }
+            while(current_hex_line%temp_longlong!=0){ //go to line which is multiple of given number
+                current_hex_line++;
+                hex_pos=0;
+            }
+        }
+        //--.align//
+
+        //--.word//
+        if(!strcasecmp(word_in_file.current_word,".word")){ //puts a data in the next memory location which supports it
+            printf("Got .word!\n");
+            getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get the argument and do nothing
+            current_hex_line++;
+            hex_pos=0;
+
+        }
+        //--.word//
+
+        //--.org//
+        if(!strcasecmp(word_in_file.current_word,".org")){
+            printf("Got .org!\n");
+            getNextWord(&word_in_file,file_contents,(*size_file_contents));
+            if(is_hexa(word_in_file.current_word)){// turn to long long
+                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+            }else{
+                temp_longlong=strtoll(word_in_file.current_word,NULL,10); //turn to long long
+            }
+            current_hex_line=temp_longlong;
+            hex_pos=0;
+
+        }
+        //--.org//
+
+        //--.wfill//
+        if(!strcasecmp(word_in_file.current_word,".wfill")){
+            printf("Got .wfill!\n");
+            //next word should store how many lines are gonna be filled by the data
+            getNextWord(&word_in_file,file_contents,(*size_file_contents));
+            if(is_hexa(word_in_file.current_word)){//if is hexa, turn to long long
+                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+            }else{
+                temp_longlong=strtoll(word_in_file.current_word,NULL,10); // if decimal, convert to long long
+            }
+            //temp_longlong now stores how many lines are gonna be filled by data
+            //now lets store it in a safe variable and call the .word code the amount of time with the data given
+            temp_longlongaux=temp_longlong;
+            getNextWord(&word_in_file,file_contents,(*size_file_contents));// current_word now has the data to be inserted ALL data in the IAS has to be in HEXA
+            for(;temp_longlongaux>0;temp_longlongaux--){
+                //.word code
+                longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
+                current_hex_line++;
+                hex_pos=0;
+                //.word code
+            }
+        }
+        //--.wfill//
+
+
+        if(!strcasecmp(word_in_file.current_word,"ADD")){
+            printf("Got ADD!\n");
+            getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get arg
+            if(hex_pos==0){
+                hex_pos=1;
+            }
+            if(hex_pos==1){
+                hex_pos=0;
+                current_hex_line++;
+            }
+        }
+        if( (!strcasecmp(word_in_file.current_word,"LDMQM")) || (!strcasecmp(word_in_file.current_word,"LOAD"))
+                || (!strcasecmp(word_in_file.current_word,"STR")) || (!strcasecmp(word_in_file.current_word,"DIV"))
+                || (!strcasecmp(word_in_file.current_word,"LDN")) || (!strcasecmp(word_in_file.current_word,"LDABS"))
+                || (!strcasecmp(word_in_file.current_word,"JMP")) || (!strcasecmp(word_in_file.current_word,"STM"))
+                || (!strcasecmp(word_in_file.current_word,"JGEZ")) || (!strcasecmp(word_in_file.current_word,"LDABS"))
+                || (!strcasecmp(word_in_file.current_word,"ADD")) || (!strcasecmp(word_in_file.current_word,"ADDABS"))
+                || (!strcasecmp(word_in_file.current_word,"SUB")) || (!strcasecmp(word_in_file.current_word,"SUBABS"))
+                || (!strcasecmp(word_in_file.current_word,"MUL"))){
+
+            getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get arg
+            if(hex_pos==0){
+                hex_pos=1;
+            }
+            if(hex_pos==1){
+                hex_pos=0;
+                current_hex_line++;
+            }
+        }
+        if( (!strcasecmp(word_in_file.current_word,"LDMQ")) || (!strcasecmp(word_in_file.current_word,"LSH"))
+                || (!strcasecmp(word_in_file.current_word,"RSH"))){
+            if(hex_pos==0){
+                hex_pos=1;
+            }
+            if(hex_pos==1){
+                hex_pos=0;
+                current_hex_line++;
+            }
+
+                }
+        for(i=0;i<word_in_file.size_current_word-1;i++){
+            c=word_in_file.current_word[i];
+        if( (word_in_file.current_word[i]==':' && i==(word_in_file.size_current_word-1)) || (word_in_file.current_word[i]==':' && word_in_file.current_word[i+1]==' ')){
+            char *name= (char*) malloc(sizeof(char)*101);
+            printf("%s is LABEL!",word_in_file.current_word );
+            rotulo label;
+            strcpy(name,word_in_file.current_word);
+            label.nome=name;
+            label.endereco=current_hex_line;
+            insere_final(label_list,label);
+        }
+        }
+    }
+
+
+}
+char *get_label_by_name(char *name,node *labels){
+    rotulo wanted = busca(labels,name);
+    if(wanted.endereco==-1){
+        printf("Rotulo %s inexistente\n",name);
+        exit (1);
+    }
+    char *address;
+    address = (char*) malloc(sizeof(char)*5);
+    longlong_to_hexchar_with0x(wanted.endereco,address);
+    return address;
+}
+
+void convert_word_to_instruction(char *file_contents, int size_file_contents){
+    //printf("%s %d\n",file_contents,size_file_contents);
+    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6]; //max word is a label of 100 chars, so 101 is max
+    int current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
+    int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
+    int i=0;
+    node *label_list=get_label(file_contents,&size_file_contents);
+    word word_in_file;
+    word_in_file.current_source_line=1;
+    word_in_file.current_word_location_in_line=0;
+    word_in_file.i=0;
+    word_in_file.size_current_word=0;
+    long long temp_longlong, temp_longlongaux;
+    initialize_hex(hex_file);
+    //search example
+    char label[]="mylabel:";
+    char *address;
+    address = get_label_by_name(label,label_list);
+    printf("Address = %s",address);
     while(-1!=getNextWord(&word_in_file,file_contents,size_file_contents)){
         printf("Tratando : %s , linha source = %d , %d palavra da linhas\n",word_in_file.current_word, word_in_file.current_source_line,word_in_file.current_word_location_in_line);
-
         //--.align//
         if(!strcasecmp(word_in_file.current_word,".align")){ //goes to line which is multiple of given number
             printf("Got .align!\n");

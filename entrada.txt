@@ -1,6 +1,7 @@
-.set CODIGO  0x000
-.set DADOS   0x100
-.set TAMANHO 200
-.org CODIGO
-.org DADOS
-.wfill TAMANHO 0x5
+.org 0
+ADD M(0x2)
+mylabel:
+ADD M(0x3)
+my_second_label:
+anythinghere
+third_label:

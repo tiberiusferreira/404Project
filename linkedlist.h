@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct Rotulo //Estrutura que armazena informacoes relevantes do rotulo = ITEM
 {

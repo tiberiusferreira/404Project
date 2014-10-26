@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "linkedlist.h"
 
 typedef struct Word //Stores info about a word in a vector
 {
@@ -13,8 +13,8 @@ typedef struct Word //Stores info about a word in a vector
     int size_current_word;
     int i;
 } word;
-
-
+char *get_label_by_name(char *name, node *labels);
+node *get_label(char *file_contents, int *size_file_contents);
 void removeComents(char *file_contents,int *size);
 char *fileToVector(FILE *source, int **size_contents);
 int getNextWord(word *currentword,char *file_contents, int size_file_contents);

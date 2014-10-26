@@ -12,9 +12,9 @@ void visualiza(node *LISTA) //imprime a lista para visualização
     node *aux;
     for(aux=LISTA->prox; aux->prox!=NULL; aux=aux->prox)
     {
-        printf("%s, ",aux->info.nome);
+        printf("%s, address %d ",aux->info.nome,aux->info.endereco);
     }
-     printf("%s.\n",aux->info.nome);
+    printf("%s, address %d\n",aux->info.nome,aux->info.endereco);
 }
 void libera(node *LISTA)//libera a lista e todos nos associados a ela
 {
@@ -94,10 +94,12 @@ void retira(node *LISTA, char *wanted)
 rotulo busca(node *LISTA, char *wanted)
 {
     rotulo vazio=newItem("vazio",-1,-1);
-    node *atual = LISTA->prox,
-          *anterior=LISTA;
+    if(LISTA==NULL){
+        return vazio;
+    }
+    node *atual = LISTA->prox,*anterior=LISTA;
     if(atual==NULL) return vazio;
-    while(atual->info.nome!=wanted)
+    while(strcasecmp(wanted,atual->info.nome))
     {
         anterior=atual;
         atual=atual->prox;
