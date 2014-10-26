@@ -681,10 +681,8 @@ char *get_label_by_name(char *name,node *labels){
 
 void convert_word_to_instruction(char *file_contents, int size_file_contents){
     //printf("%s %d\n",file_contents,size_file_contents);
-    char hex_file[18420],temp[12],current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
-    int current_word_location_in_line=0; //temp stores something to be written to IAS so 12 is enough
+    char hex_file[18420],current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
     int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
-    int i=0;
     int ins=0,hex_pos=0;
     node *label_list=get_label(file_contents,&size_file_contents);
     word word_in_file;
