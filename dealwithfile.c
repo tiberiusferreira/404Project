@@ -845,7 +845,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
             getNextWord(&word_in_file,file_contents,size_file_contents);            
             if(is_hexa(word_in_file.current_word))  //if word was given in hexa, turn to long long
             {
-//                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
+                temp_longlong=hexchar_to_longlong(word_in_file.current_word);
 //                if(sscanf(temp_longlong, "%ll", check_number) !=1){
 //                    printf(".align not getting number");
 //                    exit (1);
@@ -859,6 +859,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
 //                    exit (1);
 //                }
             }
+            current_hex_line++;
             while(current_hex_line%temp_longlong!=0)  //go to line which is multiple of given number
             {
                 current_hex_line++;
