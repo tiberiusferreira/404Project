@@ -22,7 +22,7 @@ int getNextWord(word *currentword,char *file_contents, int size_file_contents){ 
     int i_cur_word;
     for(;(*i)<size_file_contents;){ //go through all file
         c=file_contents[*i]; //get each char from file
-        for(; (file_contents[*i]==' ' || file_contents[*i]=='\n' || file_contents[*i]=='\0') && (*i)<size_file_contents; (*i)++){ //jump white spaces and line breaks
+        for(; (file_contents[*i]==' ' || file_contents[*i]=='\n' || file_contents[*i]=='\0' || file_contents[*i]=='\t') && (*i)<size_file_contents; (*i)++){ //jump white spaces and line breaks
             if(file_contents[*i]=='\n'){ //if finds a line break increase source code line counter
                 (*current_source_line_word)=0;
                 (*current_source_line)++;
@@ -33,8 +33,9 @@ int getNextWord(word *currentword,char *file_contents, int size_file_contents){ 
         for(i_cur_word=0; ;i_cur_word++,(*i)++){
             c=file_contents[*i]; //get each char from file
             if(file_contents[*i]==' ' || file_contents[*i]=='\n' || *i==size_file_contents){//word ended if found whitespace or line break or end of file
-                if((*i==size_file_contents) && (file_contents[*i]==' ' || file_contents[*i]=='\n' || ( (file_contents[*i]=='\0') && (i_cur_word==0) ))){
+                if((*i==size_file_contents) && (file_contents[*i]==' ' || file_contents[*i]=='\n' || file_contents[*i]=='\t' || ( (file_contents[*i]=='\0') && (i_cur_word==0) ))){
                     return -1;//end of file and last char was not a valid word char
+
                 }
                 if(*i==size_file_contents){
                     current_word[i_cur_word]='\0';
@@ -294,13 +295,13 @@ void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents){
     *size_file_contents=new_file_size;
 }
 void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,int what_to_change_to_size, char **file_contents, int *size_file_contents){
-    word word_in_original,word_pointing_to_origin,next_word;
+    word word_in_original,word_pointing_to_origin,next_word,word2;
     word_pointing_to_origin.current_source_line=1;
     word_pointing_to_origin.current_word_location_in_line=0;
     word_pointing_to_origin.i=0;
     word_pointing_to_origin.size_current_word=0;
     word_in_original=word_pointing_to_origin;
-    int i=0,i2,i3,i4;
+    int i=0,i2,i3;
     //printf("Called to change word %s to %s.\nReceived file:\n%s\nEOF\n",text_to_be_changed,what_to_change_to,*file_contents);
 
     for(;-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents));){
@@ -331,20 +332,17 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,i
         }
         //if found a word, overwrite it with new word
         //printf("Comparing word %s to %s.\n",word_in_original.current_word,text_to_be_changed);
-        if(!strcasecmp(word_in_original.current_word,text_to_be_changed)){
-            printf("Changing following word in original text: %s For %s\n",word_in_original.current_word,what_to_change_to);
-            for(i2=0;i2<what_to_change_to_size;i2++){
-                //                for(i4=0;i4<*size_file_contents;i4++){
-                //                    printf("char in %d: %c\n",i4,*file_contents[i4]);
-                //                }
-                (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=what_to_change_to[i2];
+        for(word2=word_pointing_to_origin;-1!=getNextWord(&word2,*file_contents,(*size_file_contents));){
+            if(!strcasecmp(word2.current_word,text_to_be_changed)){
+                printf("Changing following word in original text: %s For %s\n",word2.current_word,what_to_change_to);
+                for(i2=0;i2<what_to_change_to_size;i2++){
+                    (*file_contents)[word2.i-word2.size_current_word+i2]=what_to_change_to[i2];
+                }
+                for(i3=0;i3<(word2.size_current_word-what_to_change_to_size);i2++,i3++){
+                    (*file_contents)[word2.i-word2.size_current_word+i2]=' ';
+                }
             }
-            for(i3=0;i3<(word_in_original.size_current_word-what_to_change_to_size);i2++,i3++){
-                (*file_contents)[word_in_original.i-word_in_original.size_current_word+i2]=' ';
-            }
-
         }
-
     }
 }
 
@@ -388,7 +386,7 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     word_in_original=word_pointing_to_origin;
     char text_to_be_changed[101],what_to_change_to[101]; //max word is a label of 100 chars, so 101 is max to get \0 in
     char c; //gonna be the new file where all words take 101 chars
-    int i=0,i2,i3,i4,what_to_change_to_size,did_a_set=0;
+    int i=0,i2,i3,i4,what_to_change_to_size,current_line=0;
     //copy file contents to new file contents with each word having 100 chars//
     turn_text_word_in_100_chars(file_contents,size_file_contents);
     printf("After turning each word to 100 chars:\n%s\nEND\n",*file_contents);
@@ -401,17 +399,22 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     while(-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents))){
         //--.set//
         if(!strcasecmp(word_in_original.current_word,".set")){
+            current_line=word_in_original.current_source_line;
             printf("Got .set!\n"); //get what appears in the code and should be replaced
-            if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
+            if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1 || current_line!=word_in_original.current_source_line ){
                 printf("Set directive incomplete! Missing what to replace!\n");
+                exit (-1);
                 break;
+
             }
             //now current_word has what needs to be replaced in the text, lets store it
             strcpy(text_to_be_changed,word_in_original.current_word);
             //now lets store what to change to
-            if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
-                printf("Set directive incomplete! Missing what to replace for!\n");
+            if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1 || current_line!=word_in_original.current_source_line ){
+                printf("Set directive incomplete! Missing what to replace for !\n");
+                exit (-1);
                 break;
+
             }
             strcpy(what_to_change_to,word_in_original.current_word);
             what_to_change_to_size=word_in_original.size_current_word;
