@@ -667,12 +667,14 @@ node *get_label(char *file_contents,int *size_file_contents){
 }
 char *get_label_by_name(char *name,node *labels){
     rotulo wanted = busca(labels,name);
-    if(wanted.endereco==-1){
-        printf("Rotulo %s inexistente\n",name);
-        exit (1);
-    }
     char *address;
     address = (char*) malloc(sizeof(char)*5);
+
+    if(wanted.endereco==-1){
+        printf("Rotulo %s inexistente\n",name);
+        address="ERR";
+        return address;
+    }
     longlong_to_hexchar_with0x(wanted.endereco,address);
     return address;
 }

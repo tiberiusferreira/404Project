@@ -47,11 +47,9 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.c \
 		linkedlist.c \
-		getlabels.c \
 		dealwithfile.c 
 OBJECTS       = main.o \
 		linkedlist.o \
-		getlabels.o \
 		dealwithfile.o
 DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/qdevice.pri \
@@ -166,7 +164,6 @@ DIST          = /Applications/QT/5.3/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/QT/5.3/clang_64/mkspecs/features/lex.prf \
 		404Project.pro main.c \
 		linkedlist.c \
-		getlabels.c \
 		dealwithfile.c
 QMAKE_TARGET  = 404Project
 DESTDIR       = #avoid trailing-slash linebreak
@@ -480,12 +477,8 @@ main.o: main.c dealwithfile.h \
 linkedlist.o: linkedlist.c linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o linkedlist.o linkedlist.c
 
-getlabels.o: getlabels.c getlabels.h \
-		linkedlist.h \
-		dealwithfile.h
-	$(CC) -c $(CFLAGS) $(INCPATH) -o getlabels.o getlabels.c
-
-dealwithfile.o: dealwithfile.c dealwithfile.h
+dealwithfile.o: dealwithfile.c dealwithfile.h \
+		linkedlist.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o dealwithfile.o dealwithfile.c
 
 ####### Install
