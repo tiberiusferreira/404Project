@@ -108,14 +108,14 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         strcpy(info,"0x000");
     }
     printf("label? %s\n",info);
-    if(!is_hexa(info))
-    {
-        j=strlen(info);
-        info[j]=':';
-        info[j+1]='\0';
-        strcpy(info,get_label_by_name(info,labels));
-        if(!strcasecmp("ERR",info))return 0;
-    }
+//    if(!is_hexa(info))
+//    {
+//        j=strlen(info);
+//        info[j]=':';
+//        info[j+1]='\0';
+//        strcpy(info,get_label_by_name(info,labels));
+//        if(!strcasecmp("ERR",info))return 0;
+//    }
     strcpy(endereco,info);
     //printf("endereco: %s",endereco);
     i=j=2;
@@ -842,6 +842,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
             {
                 temp_longlong=strtoll(word_in_file.current_word,NULL,10); //if int, convert string to long long
             }
+            current_hex_line++;
             while(current_hex_line%temp_longlong!=0)  //go to line which is multiple of given number
             {
                 current_hex_line++;
@@ -923,113 +924,113 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
         //--.wfill//
 
 
-        if(!strcasecmp(word_in_file.current_word,"LDMQ"))
-        {
-            strcpy(instruction,"0A000");
-            ins=3;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"LDMQM"))
-        {
-            strcpy(instruction,"09000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"STR"))
-        {
-            strcpy(instruction,"21000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"LOAD"))
-        {
-            strcpy(instruction,"01000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"LDN"))
-        {
-            strcpy(instruction,"02000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"LDABS"))
-        {
-            strcpy(instruction,"03000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"MUL"))
-        {
-            strcpy(instruction,"0B000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"DIV"))
-        {
-            strcpy(instruction,"0C000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"JMP"))
-        {
-            strcpy(instruction,"0D000");//0E
-            ins=2;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"JGEZ"))
-        {
-            strcpy(instruction,"0F000");//10
-            ins=2;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"ADDABS"))
-        {
-            strcpy(instruction,"07000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"ADD"))
-        {
-            strcpy(instruction,"05000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"SUBABS"))
-        {
-            strcpy(instruction,"08000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"SUB"))
-        {
-            strcpy(instruction,"06000");
-            ins=1;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"LSH"))
-        {
-            strcpy(instruction,"14000");
-            ins=3;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"RSH"))
-        {
-            strcpy(instruction,"15000");
-            ins=3;
-        }
-        else if(!strcasecmp(word_in_file.current_word,"STM"))
-        {
-            strcpy(instruction,"12000");//13
-            ins=2;
-        }
-        if(ins>0)
-        {
-            strcpy(code,word_in_file.current_word);
-            if(ins!=3)  getNextWord(&word_in_file,file_contents,size_file_contents);
-            if(!create_instruction(code,word_in_file.current_word,word_in_file.size_current_word,instruction,ins,label_list)) printf("ERROR!!!\n");
-            else
-            {
-                //printf("instruction: (%s) current_hex_pos:%d\n",instruction,hex_pos);
-                longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
-                write_to_hex(hex_file,current_line_as_hex,instruction,hex_pos);
-                if(hex_pos==0)
-                {
-                    hex_pos=1;
-                }
-                else if(hex_pos==1)
-                {
-                    current_hex_line++;
-                    hex_pos=0;
-                }
-            }
-        }
-        ins=0;
+//        if(!strcasecmp(word_in_file.current_word,"LDMQ"))
+//        {
+//            strcpy(instruction,"0A000");
+//            ins=3;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"LDMQM"))
+//        {
+//            strcpy(instruction,"09000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"STR"))
+//        {
+//            strcpy(instruction,"21000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"LOAD"))
+//        {
+//            strcpy(instruction,"01000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"LDN"))
+//        {
+//            strcpy(instruction,"02000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"LDABS"))
+//        {
+//            strcpy(instruction,"03000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"MUL"))
+//        {
+//            strcpy(instruction,"0B000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"DIV"))
+//        {
+//            strcpy(instruction,"0C000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"JMP"))
+//        {
+//            strcpy(instruction,"0D000");//0E
+//            ins=2;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"JGEZ"))
+//        {
+//            strcpy(instruction,"0F000");//10
+//            ins=2;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"ADDABS"))
+//        {
+//            strcpy(instruction,"07000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"ADD"))
+//        {
+//            strcpy(instruction,"05000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"SUBABS"))
+//        {
+//            strcpy(instruction,"08000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"SUB"))
+//        {
+//            strcpy(instruction,"06000");
+//            ins=1;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"LSH"))
+//        {
+//            strcpy(instruction,"14000");
+//            ins=3;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"RSH"))
+//        {
+//            strcpy(instruction,"15000");
+//            ins=3;
+//        }
+//        else if(!strcasecmp(word_in_file.current_word,"STM"))
+//        {
+//            strcpy(instruction,"12000");//13
+//            ins=2;
+//        }
+//        if(ins>0)
+//        {
+//            strcpy(code,word_in_file.current_word);
+//            if(ins!=3)  getNextWord(&word_in_file,file_contents,size_file_contents);
+//            if(!create_instruction(code,word_in_file.current_word,word_in_file.size_current_word,instruction,ins,label_list)) printf("ERROR!!!\n");
+//            else
+//            {
+//                //printf("instruction: (%s) current_hex_pos:%d\n",instruction,hex_pos);
+//                longlong_to_hexchar_with0x(current_hex_line,current_line_as_hex);
+//                write_to_hex(hex_file,current_line_as_hex,instruction,hex_pos);
+//                if(hex_pos==0)
+//                {
+//                    hex_pos=1;
+//                }
+//                else if(hex_pos==1)
+//                {
+//                    current_hex_line++;
+//                    hex_pos=0;
+//                }
+//            }
+//        }
+//        ins=0;
 
     }
 

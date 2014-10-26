@@ -1,23 +1,7 @@
-soma: LDMQ #0A
-blablabla:
-rotulo1:
-LDMQM M(0x100) #09
-rotulo2:
-STR M(0x100)#21
-LOAD M(0x100)#01
-LDN M(0x100)#02
-LDABS M(0x100)#03
-JMP M(soma,0:19)#0D
-JMP M(0x100,20:39)#0E
-JGEZ M(0x100,0:19)#0F
-JGEZ M(0x100,20:39)#10
-ADD M(0x100)#05
-ADDABS M(0x100)#07
-SUB M(var_x)#06
-SUBABS M(0x100)#08
-MUL M(0x100) #0B
-DIV M(0x100) #0C
-LSH #14
-RSH #15
-var_x: STM M(0x100,8:19)#12
-STM M(blablabla,28:19)olamundo
+.org 0x000
+JMP M(0x000)
+.align 1
+vetor: 
+  .wfill 0xC8 0000000001
+x: 
+  .word 00 00 00 00 02
