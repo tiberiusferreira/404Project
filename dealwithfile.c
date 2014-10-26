@@ -37,6 +37,8 @@ int getNextWord(word *currentword,char *file_contents, int size_file_contents){ 
                     return -1;//end of file and last char was not a valid word char
                 }
                 if(*i==size_file_contents){
+                    current_word[i_cur_word]='\0';
+                    (*current_source_line_word)++;
                     return 0; //end of file, but got word since did not stop at if above
                 }
                 current_word[i_cur_word]='\0';
@@ -265,6 +267,7 @@ void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents){
     word_in_original=word_pointing_to_origin; //go back to beginning, new = beginning at this moment
     new_file_contents = malloc( (100*number_words_in_file+1) * (sizeof(char))); //each word can be up to 100 chars (+1 to store \0)
     for(i=0;-1!=getNextWord(&word_in_original,(*file_contents),(*size_file_contents));){
+        printf("Putting %s word in file with 100 chars.\n",word_in_original.current_word);
         if(previous_source_line<word_in_original.current_source_line){ //if the original file jumped a line, jump too
             new_file_contents[i]='\n';
             i++;
@@ -290,14 +293,15 @@ void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents){
     *file_contents=new_file_contents;
     *size_file_contents=new_file_size;
 }
-void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to, char **file_contents, int *size_file_contents){
+void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to,int what_to_change_to_size, char **file_contents, int *size_file_contents){
     word word_in_original,word_pointing_to_origin,next_word;
     word_pointing_to_origin.current_source_line=1;
     word_pointing_to_origin.current_word_location_in_line=0;
     word_pointing_to_origin.i=0;
     word_pointing_to_origin.size_current_word=0;
     word_in_original=word_pointing_to_origin;
-    int i=0,i2;
+    int i=0,i2,i3;
+    printf("Called to change word %s to %s.",text_to_be_changed,what_to_change_to);
     for(;-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents));){
         if(!strcasecmp(word_in_original.current_word,".set")){ //if found a .set check if it is not the .set we are executing
             //check arguments
@@ -313,13 +317,13 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to, 
                 }
                 if(!strcasecmp(next_word.current_word,what_to_change_to)){
                     //same set erase it, erase the .set arg1 and arg2
-                    for(i=0;i<3;i4++){
-                        for(i2=0;i2<word_in_original.size_current_word;i2++){
-                            *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
-                        }
-                        if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
-                            break;
-                        }
+                    for(i=0;i<3;i++){
+//                        for(i2=0;i2<word_in_original.size_current_word;i2++){
+//                            *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
+//                        }
+//                        if(getNextWord(&word_in_original,*file_contents,(*size_file_contents))==-1){
+//                            break;
+//                        }
                     }
                 }
             }
@@ -333,7 +337,7 @@ void change_word_A_to_word_B(char *text_to_be_changed, char *what_to_change_to, 
             for(i3=0;i3<(word_in_original.size_current_word-what_to_change_to_size);i2++,i3++){
                 *file_contents[word_in_original.i-word_in_original.size_current_word+i2]=' ';
             }
-            did_a_set=1;
+
         }
 
     }
@@ -349,15 +353,16 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
     word_in_original=word_pointing_to_origin;
     char text_to_be_changed[101],what_to_change_to[101]; //max word is a label of 100 chars, so 101 is max to get \0 in
     char c; //gonna be the new file where all words take 101 chars
-    int what_to_change_to_size;
+    int i=0,i2,i3,i4,what_to_change_to_size,did_a_set=0;
     //copy file contents to new file contents with each word having 100 chars//
     turn_text_word_in_100_chars(file_contents,size_file_contents);
-    printf("After turning each word to 100 chars:\n%s\n",*file_contents);
-    //Now the ideia is to go in *file_contents and search for .set,
-    //once found, start searching while *file_contents executing the .set
-    //when it gets to the .set line which it is executing, delete it
-    //after it has gone all file, start looking from beginning for more .set
-    //because the file has changed and we cant know how it is now
+    printf("After turning each word to 100 chars:\n%s\nEND",*file_contents);
+    /*Now the ideia is to go in *file_contents and search for .set,
+    once found, start searching while *file_contents executing the .set
+    when it gets to the .set line which it is executing, delete it
+    after it has gone all file, start looking from beginning for more .set
+    because the file has changed and we cant know how it is now
+    */
     while(-1!=getNextWord(&word_in_original,*file_contents,(*size_file_contents))){
         //--.set//
         if(!strcasecmp(word_in_original.current_word,".set")){
@@ -378,13 +383,11 @@ void expand_dot_set(char **file_contents, int *size_file_contents){
             //now go all text replacing it
             //go to beginning of text
             word_in_original=word_pointing_to_origin;
+            change_word_A_to_word_B(text_to_be_changed,what_to_change_to,what_to_change_to_size,file_contents,size_file_contents);
 
         //--.set//
         }
     }
-
-    *size_file_contents=(*size_file_contents);
-    *file_contents=*file_contents;
     //getting rid of white spaces //TODO
     printf("Expanding done, returning following file:\n%s\n",*file_contents);
 }

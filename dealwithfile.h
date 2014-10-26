@@ -14,6 +14,7 @@ typedef struct Word //Stores info about a word in a vector
     int i;
 } word;
 
+
 void removeComents(char *file_contents,int *size);
 char *fileToVector(FILE *source, int **size_contents);
 int getNextWord(word *currentword,char *file_contents, int size_file_contents);
