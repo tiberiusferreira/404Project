@@ -20,13 +20,14 @@ int main(int argc, char* argv[]){
         return 1;
     }
     file_contents=fileToVector(in,&size_contents); //turn read file into a vector of chars
-    fclose(in); //closes input file
-    fclose(out); //closes output file
+
     removeComents(file_contents,size_contents); //remove comments of code
     expand_dot_set(&file_contents,size_contents);
     //printf("%s \n %d",file_contents,*size_contents);
-
-    convert_word_to_instruction(file_contents,*size_contents);
+    //printf("%s",convert_word_to_instruction(file_contents,*size_contents));
+    fprintf(out,"%s",convert_word_to_instruction(file_contents,*size_contents));
+    fclose(in); //closes input file
+    fclose(out); //closes output file
 
 //    char temp[10];
 //    int_to_hexchar(10,temp);

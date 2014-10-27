@@ -1,4 +1,6 @@
 .org 0x000
+.align 1
+.word 0x22
 laco:
   LOAD  M(x)
   SUB   M(y)

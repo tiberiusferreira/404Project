@@ -46,7 +46,7 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         if(complemento[i]!='(') return 0;
         for(i=i+1; i<tam_complemento; i++)//set the adress and the position
         {
-          //  printf("%c ",complemento[i]);
+            //  printf("%c ",complemento[i]);
             if(complemento[i]==',')
             {
                 i++;
@@ -68,42 +68,42 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         info[j]=':';
         info[j+1]='\0';
         i=get_label_by_name(info,labels).points_to_dir;//this actions are necessary to verify if the label gives left or right position or none information
-        if(strcmp("JMP",codigo)==0)
+        if(strcasecmp("JMP",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||i==0)
+            if(strcasecmp("0:19",pos)==0||i==0)
             {
                 instruction[0]='0';
                 instruction[1]='D';
             }
-            else if(strcmp("20:39",pos)==0||i==1)
+            else if(strcasecmp("20:39",pos)==0||i==1)
             {
                 instruction[0]='0';
                 instruction[1]='E';
             }
             else return 0;
         }
-        else if(strcmp("JGEZ",codigo)==0)
+        else if(strcasecmp("JGEZ",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||i==0)
+            if(strcasecmp("0:19",pos)==0||i==0)
             {
                 instruction[0]='0';
                 instruction[1]='F';
             }
-            else if(strcmp("20:39",pos)==0||i==1)
+            else if(strcasecmp("20:39",pos)==0||i==1)
             {
                 instruction[0]='1';
                 instruction[1]='0';
             }
             else return 0;
         }
-        else if(strcmp("STOR",codigo)==0)
+        else if(strcasecmp("STOR",codigo)==0)
         {
-            if(strcmp("8:19",pos)==0||i==0)
+            if(strcasecmp("8:19",pos)==0||i==0)
             {
                 instruction[0]='1';
                 instruction[1]='2';
             }
-            else if(strcmp("28:39",pos)==0||i==1)
+            else if(strcasecmp("28:39",pos)==0||i==1)
             {
                 instruction[0]='1';
                 instruction[1]='3';
@@ -289,6 +289,46 @@ int is_hexa(char *hex)
     }
     return 0;
 }
+int is_valid_hexa(char *hex)
+{
+    int i;
+    if(hex[0]=='0' && hex[1]=='x')
+    {
+        for(i=2;i<strlen(hex);i++){
+                /*   IS 0-9?         */      /*  IS A-F    */             /* IS a-f      */
+            if((hex[i]>=48&&hex[i]<=57)||(hex[i]>=65&&hex[i]<=70)||(hex[i]>=97&&hex[i]<=102)) continue;
+            else return 0;
+        }
+        if(i>5) return 0;
+        else return 1;
+    }
+    return 0;
+}
+
+int is_valid_small_hexa(char *number)
+{
+    int i;
+    if(number[0]=='0' && number[1]=='x')
+    {
+        for(i=2;i<strlen(number);i++){
+                /*   IS 0-9?         */      /*  IS A-F    */             /* IS a-f      */
+            if((number[i]>=48&&number[i]<=57)||(number[i]>=65&&number[i]<=70)||(number[i]>=97&&number[i]<=102)) continue;
+            else return 0;
+        }
+        if(i>12) return 0;
+        else return 1;
+    }
+    else{
+        for(i=0;i<strlen(number);i++){
+                /*   IS 0-9?         */
+            if(number[i]>=48&&number[i]<=57) continue;
+            else return 0;
+        }
+        if(i>10) return 0;
+        else return 1;
+    }
+    return 0;
+}
 
 char *remove_0x(char *hex)
 {//removes 0x from string and moves it so it starts with previous first digit after 0x
@@ -308,7 +348,7 @@ char *remove_0x(char *hex)
 
 void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_write,int write_to_dir)
 { //this function is supposed (lets take a minute to pray here) to write to hex file the what_to_write
-  //write_to_dir says if to left(0) or dir(1) or whole(-1) memory_address_to_write tells which line to write to.
+    //write_to_dir says if to left(0) or dir(1) or whole(-1) memory_address_to_write tells which line to write to.
     int i=0,current_source_line=0,aux=0,amount_to_move=0,tam_what_to_write;
     int target_line=hexchar_to_longlong(memory_address_to_write);
     char what_to_write_full[11];
@@ -417,7 +457,7 @@ void write_to_hex(char *hex_file, char *memory_address_to_write, char *what_to_w
 
 void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents)
 { //turns all words into 100 chars words and writes to new array
-  //necessary because the .set can cause A to become AAAAAA and the array can not be expanded
+    //necessary because the .set can cause A to become AAAAAA and the array can not be expanded
     word word_in_original,word_pointing_to_origin;
     word_pointing_to_origin.current_source_line=1;
     word_pointing_to_origin.current_word_location_in_line=0;
@@ -654,11 +694,19 @@ node *get_label(char *file_contents,int *size_file_contents)
             getNextWord(&word_in_file,file_contents,(*size_file_contents));
             if(is_hexa(word_in_file.current_word))  //if word was given in hexa, turn to long long
             {
+                if(!is_valid_hexa(word_in_file.current_word)){
+                    printf("Not a valid hexa passed to align!");
+                    exit (1);
+                }
                 temp_longlong=hexchar_to_longlong(word_in_file.current_word);
             }
             else   //if given in decimal base, convert string to number
             {
                 temp_longlong=strtoll(word_in_file.current_word,NULL,10); //if int, convert string to long long
+                if(temp_longlong<1){
+                    printf("Not a valid number passed to align!");
+                    exit (1);
+                }
             }
             while(current_hex_line%temp_longlong!=0)  //go to line which is multiple of given number
             {
@@ -673,6 +721,12 @@ node *get_label(char *file_contents,int *size_file_contents)
         {
             //printf("Got .word!\n");
             getNextWord(&word_in_file,file_contents,(*size_file_contents)); //get the argument and do nothing
+            if(is_hexa(word_in_file.current_word)){
+            if(!is_valid_hexa(word_in_file.current_word)){
+                printf("Not a valid hexa passed to .word!");
+                exit (1);
+            }
+            }
             current_hex_line++;
             hex_pos=0;
 
@@ -686,6 +740,10 @@ node *get_label(char *file_contents,int *size_file_contents)
             getNextWord(&word_in_file,file_contents,(*size_file_contents));
             if(is_hexa(word_in_file.current_word)) // turn to long long
             {
+                if(!is_valid_hexa(word_in_file.current_word)){
+                    printf("Not a valid hexa passed to .org!");
+                    exit (1);
+                }
                 temp_longlong=hexchar_to_longlong(word_in_file.current_word);
             }
             else
@@ -706,6 +764,7 @@ node *get_label(char *file_contents,int *size_file_contents)
             getNextWord(&word_in_file,file_contents,(*size_file_contents));
             if(is_hexa(word_in_file.current_word)) //if is hexa, turn to long long
             {
+
                 temp_longlong=hexchar_to_longlong(word_in_file.current_word);
             }
             else
@@ -787,17 +846,17 @@ node *get_label(char *file_contents,int *size_file_contents)
                 label_plus my_label_plus = get_label_by_name(word_in_file.current_word,label_list);
                 rotulo *pointer_to_rot;
                 if(strcasecmp(my_label_plus.points_to,"ERR")){//if already exists just update already existing one
-                        pointer_to_rot=busca_retu_point(label_list,word_in_file.current_word);//ERR = when not found
-                        if(hex_pos==0){
-                            pointer_to_rot->aponta_dir=0;
-                        }else{
-                            pointer_to_rot->aponta_dir=1;
-                        }
-                        strcpy(name,word_in_file.current_word);
-                        pointer_to_rot->nome=name; //updating current existing label
-                        pointer_to_rot->endereco=current_hex_line;
-                        continue;
-            }
+                    pointer_to_rot=busca_retu_point(label_list,word_in_file.current_word);//ERR = when not found
+                    if(hex_pos==0){
+                        pointer_to_rot->aponta_dir=0;
+                    }else{
+                        pointer_to_rot->aponta_dir=1;
+                    }
+                    strcpy(name,word_in_file.current_word);
+                    pointer_to_rot->nome=name; //updating current existing label
+                    pointer_to_rot->endereco=current_hex_line;
+                    continue;
+                }
                 if(hex_pos==0){
                     label.aponta_dir=0;
                 }else{
@@ -832,9 +891,10 @@ label_plus get_label_by_name(char *name,node *labels) //receives a label name an
     return my_label_plus;
 }
 
-void convert_word_to_instruction(char *file_contents, int size_file_contents)
+char *convert_word_to_instruction(char *file_contents, int size_file_contents)
 {
-    char hex_file[18420],current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
+    char *hex_file,current_line_as_hex[5], instruction[6],code[7]; //max word is a label of 100 chars, so 101 is max
+    hex_file = (char*) malloc(sizeof(char)*18420);
     int current_hex_line=0; //current_hex_pos -1 = esq, current_hex_dir = 1
     int ins=0,hex_pos=0;
     node *label_list=get_label(file_contents,&size_file_contents);
@@ -856,19 +916,22 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
             getNextWord(&word_in_file,file_contents,size_file_contents);
             if(is_hexa(word_in_file.current_word))  //if word was given in hexa, turn to long long
             {
+                if(!is_valid_hexa(word_in_file.current_word)){
+                    printf("Not a valid hexa passed to align!");
+                    exit (1);
+                }
                 temp_longlong=hexchar_to_longlong(word_in_file.current_word);
-//                if(sscanf(temp_longlong, "%ll", check_number) !=1){
-//                    printf(".align not getting number");
-//                    exit (1);
-//                }
+
             }
             else   //if given in decimal base, convert string to number
             {
+
                 temp_longlong=strtoll(word_in_file.current_word,NULL,10); //if int, convert string to long long
-//                if(sscanf(temp_longlong, "%ll", check_number) !=1){
-//                    printf(".align not getting number");
-//                    exit (1);
-//                }
+                if(temp_longlong<1){
+                    printf("Not a valid number passed to align!");
+                    exit (1);
+                }
+
             }
             current_hex_line++;
             while(current_hex_line%temp_longlong!=0)  //go to line which is multiple of given number
@@ -1063,6 +1126,8 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
     }
 
     printf("%s",hex_file);
+    return hex_file;
+
 }
 
 char *fileToVector(FILE *source,int **size_contents)
