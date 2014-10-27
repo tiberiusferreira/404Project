@@ -17,16 +17,17 @@ void removeComents(char *file_contents,int *size)
     }
 }
 
+
 int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int type, node *labels)
 {
     //printf("\n>>%s - %s - %d - %s - %d<<\n", codigo,complemento,tam_complemento,instruction, type);
     int i=0,j=0;
-    char info[102],endereco[6];
-    if(type==1)
+    char info[102],endereco[6];//info receive all parameters, endereco will receive the instruction's adress
+    if(type==1)//instructions with this format: mnemonico M(0x000 || label)
     {
         if(complemento[i++]!='M') return 0;
         if(complemento[i]!='(') return 0;
-        for(i=i+1; i<tam_complemento; i++)
+        for(i=i+1; i<tam_complemento; i++)//set adress parameter
         {
             if(complemento[i]==')')
             {
@@ -37,14 +38,14 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             j++;
         }
     }
-    else if(type==2)
+    else if(type==2)//instructions with this format: mnemonico M(0x000,20:39 || label)
     {
         char pos[6];
-        strcpy(pos,"0");
-        int flag=0;
+        strcpy(pos,"0");//set a defaut value
+        int flag=0;//control when we are wornking with the adress or the position
         if(complemento[i++]!='M') return 0;
         if(complemento[i]!='(') return 0;
-        for(i=i+1; i<tam_complemento; i++)
+        for(i=i+1; i<tam_complemento; i++)//set the adress and the position
         {
           //  printf("%c ",complemento[i]);
             if(complemento[i]==',')
@@ -67,27 +68,29 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         j=strlen(info);
         info[j]=':';
         info[j+1]='\0';
+        i=get_label_by_name(info,labels).points_to_dir;//this actions are necessary to verify if the label gives left or right position or none information
         if(strcmp("JMP",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("0:19",pos)==0||i==0)
             {
                 instruction[0]='0';
                 instruction[1]='D';
             }
-            else if(strcmp("20:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("20:39",pos)==0||i==1)
             {
                 instruction[0]='0';
                 instruction[1]='E';
             }
+            else return 0;
         }
         else if(strcmp("JGEZ",codigo)==0)
         {
-            if(strcmp("0:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("0:19",pos)==0||i==0)
             {
                 instruction[0]='0';
                 instruction[1]='F';
             }
-            else if(strcmp("20:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("20:39",pos)==0||i==1)
             {
                 instruction[0]='1';
                 instruction[1]='0';
@@ -96,12 +99,12 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
         }
         else if(strcmp("STOR",codigo)==0)
         {
-            if(strcmp("8:19",pos)==0||get_label_by_name(info,labels).points_to_dir==0)
+            if(strcmp("8:19",pos)==0||i==0)
             {
                 instruction[0]='1';
                 instruction[1]='2';
             }
-            else if(strcmp("28:39",pos)==0||get_label_by_name(info,labels).points_to_dir==1)
+            else if(strcmp("28:39",pos)==0||i==1)
             {
                 instruction[0]='1';
                 instruction[1]='3';
@@ -109,12 +112,12 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             else return 0;
         }
     }
-    else if(type==3)
+    else if(type==3)//instructions with this format: mnemonico NULL
     {
         strcpy(info,"0x000");
     }
     printf("label? %s\n",info);
-    if(!is_hexa(info))
+    if(!is_hexa(info))//verify if its a valid hexadecimal adress
     {
         if(type!=2){
             j=strlen(info);
@@ -122,7 +125,7 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
             info[j+1]='\0';
         }
         strcpy(info,get_label_by_name(info,labels).points_to);
-        if(!strcasecmp("ERR",info))return 0;
+        if(!strcasecmp("ERR",info))return 0;//verify if parameter is a valid label
     }
     strcpy(endereco,info);
     //printf("endereco: %s",endereco);
@@ -147,7 +150,6 @@ int create_instruction(char *codigo, char *complemento, int tam_complemento, cha
     instruction[5]='\0';
     return 1;
 }
-
 
 int getNextWord(word *currentword,char *file_contents, int size_file_contents)  //receives file contents and size of it
 {
@@ -858,7 +860,7 @@ void convert_word_to_instruction(char *file_contents, int size_file_contents)
         if(!strcasecmp(word_in_file.current_word,".align"))  //goes to line which is multiple of given number
         {
             printf("Got .align!\n");
-            getNextWord(&word_in_file,file_contents,size_file_contents);            
+            getNextWord(&word_in_file,file_contents,size_file_contents);
             if(is_hexa(word_in_file.current_word))  //if word was given in hexa, turn to long long
             {
                 temp_longlong=hexchar_to_longlong(word_in_file.current_word);
