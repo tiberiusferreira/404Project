@@ -15,10 +15,7 @@ int main(int argc, char* argv[]){
         printf("Entrada nao encontrada\n");
         return 1;
     }
-
-
     file_contents=fileToVector(in,&size_contents); //turn read file into a vector of chars
-
     removeComents(file_contents,size_contents); //remove comments of code
     expand_dot_set(&file_contents,size_contents);
     //printf("%s \n %d",file_contents,*size_contents);
