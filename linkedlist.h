@@ -25,6 +25,7 @@ void insere_final(node *LISTA, rotulo e);
 void retira(node *LISTA, char *wanted);
 rotulo newItem(char *name, int adress, int direction);
 rotulo busca(node *LISTA, char *wanted);
+rotulo *busca_retu_point(node *LISTA, char *wanted);
 
 
 #endif // LINKEDLIST_H

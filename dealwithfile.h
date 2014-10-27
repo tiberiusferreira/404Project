@@ -34,5 +34,5 @@ char *longlong_to_hexchar_without0x(long long number, char *destiny);
 char *remove_0x(char *hex);
 int create_instruction(char *codigo, char *complemento, int tam_complemento, char* instruction, int type, node *labels);
 void turn_text_word_in_100_chars(char **file_contents, int *size_file_contents);
-
+int is_valid_number(long long number);
 #endif // DEALWITHFILE_H

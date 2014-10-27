@@ -778,9 +778,25 @@ node *get_label(char *file_contents,int *size_file_contents)
             c=word_in_file.current_word[i];
             if( (word_in_file.current_word[i]==':' && i==(word_in_file.size_current_word-1)) || (word_in_file.current_word[i]==':' && word_in_file.current_word[i+1]==' '))
             {
+                rotulo label;
                 char *name= (char*) malloc(sizeof(char)*101);
                 printf("%s is LABEL!",word_in_file.current_word );
-                rotulo label;
+                label_plus my_label_plus = get_label_by_name(word_in_file.current_word,label_list);
+                rotulo *pointer_to_rot;
+                if(strcasecmp(my_label_plus.points_to,"ERR")){
+                        pointer_to_rot=busca_retu_point(label_list,word_in_file.current_word);
+                        if(hex_pos==0){
+                            pointer_to_rot->aponta_dir=0;
+                        }else{
+                            pointer_to_rot->aponta_dir=1;
+                        }
+                        strcpy(name,word_in_file.current_word);
+                        pointer_to_rot->nome=name;
+                        pointer_to_rot->endereco=current_hex_line;
+                        continue;
+            }
+
+
                 if(hex_pos==0){
                     label.aponta_dir=0;
                 }else{

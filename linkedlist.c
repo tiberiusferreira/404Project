@@ -108,6 +108,22 @@ rotulo busca(node *LISTA, char *wanted)
 
     return atual->info;
 }
+rotulo *busca_retu_point(node *LISTA, char *wanted)
+{
+    if(LISTA==NULL){
+        return NULL;
+    }
+    node *atual = LISTA->prox,*anterior=LISTA;
+    if(atual==NULL) return NULL;
+    while(strcasecmp(wanted,atual->info.nome))
+    {
+        anterior=atual;
+        atual=atual->prox;
+        if(atual==NULL) return NULL;
+    }
+
+    return &(atual->info);
+}
 rotulo newItem(char *name, int adress, int direction){
     rotulo novo;
     novo.nome=name;
